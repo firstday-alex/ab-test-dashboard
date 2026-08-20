@@ -232,6 +232,18 @@ calculation.** `total_sessions` is the sum of `Sessions` across the sheet's rows
 on the dashboard — per-test, roll-up, and opportunities — is denominated on that figure alone. The
 sheet defines the traffic universe for this purpose; Intelligems supplies test metrics only.
 
+**Sitewide groups are excluded from the roll-up.** List them in `traffic.sitewide_groups` (e.g.
+`["Cart"]`); they resolve to the full denominator, so the row reads 100% and its stat label reads
+`sitewide` instead of `traffic`. Anything at 100% is then dropped from the coverage numerator and from
+the opportunities list by `is_sitewide()`. A cart drawer is on every session, so it says nothing about
+which landing-page surfaces are under test — counting it would peg coverage at 100% and hide exactly
+the gaps the roll-up exists to show. The rule keys off the value, not the name, so a sheet group that
+ever reaches 100% is handled the same way.
+
+A test combining a sitewide group with a surface group (`[Cart][TDK-BTS]`) reads 100% on its row —
+sitewide subsumes the rest rather than summing past the denominator — while `TDK-BTS` still counts
+toward coverage on its own.
+
 ### 6. Build and deliver
 
 ```bash

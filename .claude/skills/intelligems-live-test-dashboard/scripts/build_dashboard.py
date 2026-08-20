@@ -63,13 +63,34 @@ def norm_group(name):
 
 
 def traffic_index(data):
-    """{normalized group -> (display name, sessions)} plus the denominator."""
+    """
+    {normalized group -> (display name, sessions)} plus the denominator.
+
+    `traffic.sitewide_groups` names groups that span the whole denominator -- a
+    cart drawer or header is on every session, so it isn't a landing-page
+    surface. They resolve to `total_sessions`, which makes them 100% by
+    construction and lets the 100% rule below catch them without a second flag.
+    """
     traffic = data.get("traffic") or {}
-    groups = traffic.get("groups") or {}
-    idx = {norm_group(k): (k, float(v)) for k, v in groups.items()}
+    groups = dict(traffic.get("groups") or {})
     total = traffic.get("total_sessions")
-    total = float(total) if total is not None else sum(v for _, v in idx.values())
+    total = float(total) if total is not None else sum(float(v) for v in groups.values())
+    for name in traffic.get("sitewide_groups") or []:
+        groups.setdefault(name, total)
+    idx = {norm_group(k): (k, float(v)) for k, v in groups.items()}
     return idx, total
+
+
+def is_sitewide(sessions, total):
+    """
+    A group covering 100% of traffic is sitewide, not a surface.
+
+    Such a group tells you nothing about which surfaces are being tested, so it
+    shows on its own row but is excluded from the coverage roll-up and from the
+    opportunities list. Counting it would peg coverage at 100% and hide the gaps
+    the roll-up exists to expose.
+    """
+    return bool(total) and sessions >= total - 0.5
 
 
 def test_groups(test):
@@ -79,14 +100,17 @@ def test_groups(test):
     return [m.strip() for m in re.findall(r"\[([^\[\]]+)\]", test.get("name") or "")]
 
 
-def resolve_traffic(test, idx):
+def resolve_traffic(test, idx, denom=0.0):
     """
-    -> (sessions or None, matched display names, unmatched claimed names)
+    -> (sessions or None, matched display names, unmatched names, sitewide flag)
 
     sessions is None when nothing matched, so the row renders an em dash rather
     than a zero -- 'we cannot tell' and 'no traffic' are different statements.
+
+    A sitewide group subsumes every other group, so the row is the whole
+    denominator rather than a sum that would exceed it.
     """
-    matched, missing, total = [], [], 0.0
+    matched, missing, total, wide = [], [], 0.0, False
     for g in test_groups(test):
         key = norm_group(g)
         if key in idx:
@@ -94,9 +118,13 @@ def resolve_traffic(test, idx):
             if display not in matched:      # a name repeated in one title counts once
                 matched.append(display)
                 total += sessions
+                if is_sitewide(sessions, denom):
+                    wide = True
         else:
             missing.append(g)
-    return (total if matched else None), matched, missing
+    if wide:
+        total = denom
+    return (total if matched else None), matched, missing, wide
 
 
 # ---------------------------------------------------------------------------
@@ -209,13 +237,17 @@ def render_row(test, tidx=None, ttotal=0.0):
     )
 
     # ---- traffic: sum of this test's own groups ---------------------------
-    sessions, matched, missing = resolve_traffic(test, tidx or {})
+    sessions, matched, missing, wide = resolve_traffic(test, tidx or {}, ttotal)
     if sessions is None:
         traffic_stat = '<span class="stat"><b>&mdash;</b><small>traffic</small></span>'
     else:
         share = f"{sessions / ttotal * 100:.1f}%" if ttotal else "&mdash;"
+        # "sitewide" replaces the label rather than extending it: the stat boxes are
+        # a fixed 96px so the columns line up row to row, and a longer string widens
+        # this one box (auto min-width beats flex-basis) and shifts the whole row.
+        label = "sitewide" if wide else "traffic"
         traffic_stat = (
-            f'<span class="stat"><b>{share}</b><small>traffic</small></span>'
+            f'<span class="stat"><b>{share}</b><small>{label}</small></span>'
         )
 
     # ---- detail table -----------------------------------------------------
@@ -265,6 +297,10 @@ def render_row(test, tidx=None, ttotal=0.0):
         share = f" ({sessions / ttotal * 100:.1f}%)" if ttotal else ""
         meta_bits.append(
             f"Groups {esc(' + '.join(matched))} &rarr; {sessions:,.0f} sessions{share}"
+        )
+    if wide:
+        meta_bits.append(
+            "Sitewide &mdash; on every session, so excluded from the coverage roll-up"
         )
     if missing:
         meta_bits.append(
@@ -429,12 +465,19 @@ def coverage(tests, tidx, ttotal):
     """
     under_test = set()
     for t in tests:
-        _, matched, _ = resolve_traffic(t, tidx)
-        under_test.update(norm_group(m) for m in matched)
+        _, matched, _, _ = resolve_traffic(t, tidx, ttotal)
+        for m in matched:
+            key = norm_group(m)
+            if not is_sitewide(tidx[key][1], ttotal):
+                under_test.add(key)
 
     tested = sum(tidx[k][1] for k in under_test)
     idle = sorted(
-        ((disp, sess) for k, (disp, sess) in tidx.items() if k not in under_test),
+        (
+            (disp, sess)
+            for k, (disp, sess) in tidx.items()
+            if k not in under_test and not is_sitewide(sess, ttotal)
+        ),
         key=lambda pair: -pair[1],
     )
     return tested, under_test, idle
