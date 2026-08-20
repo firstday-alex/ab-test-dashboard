@@ -227,9 +227,10 @@ and is called out in the expanded meta line as unmatched — **never substitute 
 `[KCM-Sales]` and the sheet's `KCM-Melatonin` are probably the same surface, but "probably" is not a
 number, so it stays unjoined until the names actually agree.
 
-**This sheet is paid ad traffic, not sitewide.** It totalled 53,517 sessions against 1,799,216
-sitewide sessions for 2026-07-20→08-20 — about 3%. Label the denominator for what it is
-(`denominator_label`); calling it "% of site traffic" overstates every figure by roughly 34x.
+**The sheet is the only source for traffic share. Do not bring Intelligems visitor counts into this
+calculation.** `total_sessions` is the sum of `Sessions` across the sheet's rows, and every percentage
+on the dashboard — per-test, roll-up, and opportunities — is denominated on that figure alone. The
+sheet defines the traffic universe for this purpose; Intelligems supplies test metrics only.
 
 ### 6. Build and deliver
 
