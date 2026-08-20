@@ -244,6 +244,22 @@ A test combining a sitewide group with a surface group (`[Cart][TDK-BTS]`) reads
 sitewide subsumes the rest rather than summing past the denominator — while `TDK-BTS` still counts
 toward coverage on its own.
 
+### 5d. Deep links
+
+Each test's name in the collapsed row is a link that opens that test in Intelligems in a new tab
+(`target="_blank" rel="noopener"`). Clicking the name does **not** toggle the row — a small JS handler
+stops propagation so the `<summary>` toggle doesn't also fire. Clicking anywhere else on the row still
+expands it, and Expand/Collapse all are unaffected. Keep both behaviours: the row's whole purpose is
+to expand into the per-variation table, so a click target that only navigated away would remove it.
+
+The URL comes from `IG_URL_TEMPLATE` in the script, overridable per run with a top-level
+`"intelligems_url_template": "https://.../{id}"` in the input JSON.
+
+**The template is unverified.** `app.intelligems.io` is a single-page app that returns HTTP 200 for
+every path — `/experiment/<id>`, `/experiments/<id>`, even a bare `/<id>` — so fetching it cannot
+confirm which shape is right, and no MCP tool returns an app URL. If a link 404s inside the app, get
+one real URL from the browser address bar and set the template; don't probe for it.
+
 ### 6. Build and deliver
 
 ```bash

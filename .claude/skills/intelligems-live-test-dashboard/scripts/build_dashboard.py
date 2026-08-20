@@ -58,6 +58,16 @@ READINESS = {
 # count that group's sessions twice. Summing instead of unioning is how a
 # coverage figure ends up above 100%.
 # ---------------------------------------------------------------------------
+# Deep link into the Intelligems app. Override with `intelligems_url_template`
+# in the input JSON -- the app is a single-page app that returns 200 for every
+# path, so a wrong template cannot be detected by fetching it.
+IG_URL_TEMPLATE = "https://app.intelligems.io/experiment/{id}"
+
+
+def ig_url(test, template=None):
+    return (template or IG_URL_TEMPLATE).format(id=test["id"])
+
+
 def norm_group(name):
     return " ".join(str(name).split()).strip().upper()
 
@@ -210,7 +220,7 @@ def validate(test, idx):
 # ---------------------------------------------------------------------------
 # Rendering
 # ---------------------------------------------------------------------------
-def render_row(test, tidx=None, ttotal=0.0):
+def render_row(test, tidx=None, ttotal=0.0, url_tpl=None):
     hero = test.get("hero_metric") or {}
     hero_key = hero.get("key")
     hero_label = hero.get("label") or METRIC_LABELS.get(hero_key, hero_key or "Hero metric")
@@ -311,7 +321,7 @@ def render_row(test, tidx=None, ttotal=0.0):
         meta_bits.append("No group tag — traffic share unknown")
 
     link = (
-        f'<a class="ig-link" href="https://app.intelligems.io/experiment/{esc(test["id"])}"'
+        f'<a class="ig-link" href="{esc(ig_url(test, url_tpl))}"'
         ' target="_blank" rel="noopener">Open in Intelligems &rarr;</a>'
     )
 
@@ -324,7 +334,9 @@ def render_row(test, tidx=None, ttotal=0.0):
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">{esc(test['name'])}{lead_note}</span>
+      <span class="t-name"><a class="t-link" href="{ig_url(test, url_tpl)}"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">{esc(test['name'])}</a>{lead_note}</span>
       <span class="stats">
         <span class="stat"><b>{fmt_value(test['days_live'], 'int')}</b><small>days live</small></span>
         <span class="stat"><b>{fmt_value(variant_orders, 'int')}</b><small>variant orders</small></span>
@@ -389,6 +401,10 @@ summary:hover{background:var(--bg-2)}
 .row-main{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
 .t-name{flex:1 1 220px;min-width:0;font-weight:600;letter-spacing:-.01em;overflow-wrap:anywhere}
 .lead-note{font-weight:400;color:var(--ink-3);font-size:12.5px}
+/* Test name is a deep link; the row still expands when clicked elsewhere. */
+.t-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.t-link:hover{color:var(--up);border-bottom-color:currentColor}
+.t-link:focus-visible{outline:2px solid var(--up);outline-offset:2px;border-radius:2px}
 .stats{flex:0 1 auto;display:flex;flex-wrap:wrap;gap:8px 0}
 /* Fixed-width stats + fixed-width pill keep the columns aligned row to row. */
 .stat{flex:0 0 96px;display:flex;flex-direction:column;line-height:1.2;padding-right:10px}
@@ -446,6 +462,11 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 """
 
 JS = """
+/* A click on the name opens Intelligems in a new tab; stopping propagation
+   keeps the <summary> from also toggling the row open/closed. */
+document.querySelectorAll('summary .t-link').forEach(function(a){
+  a.addEventListener('click', function(e){ e.stopPropagation(); });
+});
 document.querySelectorAll('[data-act]').forEach(function(b){
   b.addEventListener('click', function(){
     var open = b.dataset.act === 'open';
@@ -541,6 +562,7 @@ def build(data):
         if tallies[k]
     )
 
+    url_tpl = data.get("intelligems_url_template")
     traffic_meta = data.get("traffic") or {}
     tidx, ttotal = traffic_index(data)
     tlabel = traffic_meta.get("denominator_label") or "sessions"
@@ -556,7 +578,7 @@ def build(data):
     org_txt = f" &middot; {esc(org)}" if org else ""
 
     rows = (
-        "".join(render_row(t, tidx, ttotal) for t in tests)
+        "".join(render_row(t, tidx, ttotal, url_tpl) for t in tests)
         if tests
         else '<div class="empty">No A/B tests are currently live in Intelligems.</div>'
     )

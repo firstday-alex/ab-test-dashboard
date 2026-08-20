@@ -43,6 +43,10 @@ summary:hover{background:var(--bg-2)}
 .row-main{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
 .t-name{flex:1 1 220px;min-width:0;font-weight:600;letter-spacing:-.01em;overflow-wrap:anywhere}
 .lead-note{font-weight:400;color:var(--ink-3);font-size:12.5px}
+/* Test name is a deep link; the row still expands when clicked elsewhere. */
+.t-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent}
+.t-link:hover{color:var(--up);border-bottom-color:currentColor}
+.t-link:focus-visible{outline:2px solid var(--up);outline-offset:2px;border-radius:2px}
 .stats{flex:0 1 auto;display:flex;flex-wrap:wrap;gap:8px 0}
 /* Fixed-width stats + fixed-width pill keep the columns aligned row to row. */
 .stat{flex:0 0 96px;display:flex;flex-direction:column;line-height:1.2;padding-right:10px}
@@ -115,7 +119,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[TRMV-BTS] A/A</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/f85fd482-275c-43a6-a338-12bb91b2bb1b"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[TRMV-BTS] A/A</a></span>
       <span class="stats">
         <span class="stat"><b>44</b><small>days live</small></span>
         <span class="stat"><b>338</b><small>variant orders</small></span>
@@ -142,7 +148,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[KCM-Sale] Hero Copy</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/f5f72659-27a8-4e2b-9532-2cae9b8d5580"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[KCM-Sale] Hero Copy</a></span>
       <span class="stats">
         <span class="stat"><b>22</b><small>days live</small></span>
         <span class="stat"><b>31</b><small>variant orders</small></span>
@@ -169,7 +177,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[KCM-Broad] Price per Gummy</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/5aacbb4f-c08e-49f0-853f-dce08fd83446"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[KCM-Broad] Price per Gummy</a></span>
       <span class="stats">
         <span class="stat"><b>20</b><small>days live</small></span>
         <span class="stat"><b>140</b><small>variant orders</small></span>
@@ -196,7 +206,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[Broad-PDP] Add Ingredients Button to Buy Box Module</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/ae005c92-1055-48ce-8818-d2c588d3e0d0"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[Broad-PDP] Add Ingredients Button to Buy Box Module</a></span>
       <span class="stats">
         <span class="stat"><b>6</b><small>days live</small></span>
         <span class="stat"><b>4,295</b><small>variant orders</small></span>
@@ -223,7 +235,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[TDK-BTS][KDE-BTS] BTS Multi Product Tab Placement</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/0ee05de5-5610-4a69-8e9c-ff8b2a925091"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[TDK-BTS][KDE-BTS] BTS Multi Product Tab Placement</a></span>
       <span class="stats">
         <span class="stat"><b>2</b><small>days live</small></span>
         <span class="stat"><b>266</b><small>variant orders</small></span>
@@ -250,7 +264,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[Broad-PDP] Buy Box Trust Badges</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/58d89c70-fd70-4793-a10b-6934de47a833"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[Broad-PDP] Buy Box Trust Badges</a></span>
       <span class="stats">
         <span class="stat"><b>2</b><small>days live</small></span>
         <span class="stat"><b>1,022</b><small>variant orders</small></span>
@@ -277,7 +293,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[CART] UI Tweaks V2</span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/9f56a95c-5e73-4a5f-ae6a-771d7a92175c"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[CART] UI Tweaks V2</a></span>
       <span class="stats">
         <span class="stat"><b>0</b><small>days live</small></span>
         <span class="stat"><b>96</b><small>variant orders</small></span>
@@ -304,7 +322,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">[NEW-LP] 30% off funnel <span class="lead-note">&mdash; leading of 2 variants: Closed 52%</span></span>
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/1b5f03e3-fb44-47e5-bb86-b9ca2eaea605"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[NEW-LP] 30% off funnel</a> <span class="lead-note">&mdash; leading of 2 variants: Closed 52%</span></span>
       <span class="stats">
         <span class="stat"><b>0</b><small>days live</small></span>
         <span class="stat"><b>0</b><small>variant orders</small></span>
@@ -344,6 +364,11 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
     All values pulled from the Intelligems API at the time above.</footer>
 </div>
 <script>
+/* A click on the name opens Intelligems in a new tab; stopping propagation
+   keeps the <summary> from also toggling the row open/closed. */
+document.querySelectorAll('summary .t-link').forEach(function(a){
+  a.addEventListener('click', function(e){ e.stopPropagation(); });
+});
 document.querySelectorAll('[data-act]').forEach(function(b){
   b.addEventListener('click', function(){
     var open = b.dataset.act === 'open';
