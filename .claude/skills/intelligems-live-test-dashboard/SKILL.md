@@ -193,6 +193,44 @@ than one that says the number can't be trusted:
 `impact.est_monthly_revenue_increase` is worth including in the note when it's large in either
 direction, labelled as Intelligems' estimate.
 
+### 5c. Traffic groups
+
+Each test name carries the landing-page groups it runs on in square brackets, and a test may span
+several: `[TDK-BTS][KDE-BTS] BTS Multi Product Tab Placement` covers both. The script parses these
+from the name; pass an explicit `"groups": [...]` on a test only to override.
+
+Sessions per group come from a published Google Sheet CSV (Meta ads bucketed by landing-page group):
+
+```bash
+curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-UNFL2QOO463D9C72xV0GZX5BD_WYTPPzXInUkZ2cuiuS0n6--G-rKKz7IZ2eZCsWwETiVQ9PJTFd/pub?output=csv" -o groups.csv
+```
+
+Columns: `Ad Name, Landing Page Path Groups, Sessions, ATC Rate, Bounce Rate, Avg Engaged Time (mins), CVR, Orders`.
+Sum `Sessions` per group and add a top-level `traffic` block:
+
+```json
+"traffic": {
+  "source": "Meta ads by landing-page group, 2026-08-19 (1 day)",
+  "denominator_label": "paid LP sessions",
+  "total_sessions": 53517,
+  "groups": { "Broad PDP": 23397, "Other": 15076, "TDK-BTS": 10236, "KDE-BTS": 4390, "KCM-Melatonin": 418 }
+}
+```
+
+**Per test, traffic is the sum of that test's own groups. Across tests it is the UNION, never the
+sum.** Two tests on `Broad PDP` cover those 23,397 sessions once, not twice — summing produced 114.8%
+coverage in testing, which is impossible on its face. The script owns this arithmetic in `coverage()`;
+don't recompute it by hand.
+
+Matching is case- and whitespace-insensitive. A group tag with no row in the sheet renders an em dash
+and is called out in the expanded meta line as unmatched — **never substitute a similarly-named group.**
+`[KCM-Sales]` and the sheet's `KCM-Melatonin` are probably the same surface, but "probably" is not a
+number, so it stays unjoined until the names actually agree.
+
+**This sheet is paid ad traffic, not sitewide.** It totalled 53,517 sessions against 1,799,216
+sitewide sessions for 2026-07-20→08-20 — about 3%. Label the denominator for what it is
+(`denominator_label`); calling it "% of site traffic" overstates every figure by roughly 34x.
+
 ### 6. Build and deliver
 
 ```bash

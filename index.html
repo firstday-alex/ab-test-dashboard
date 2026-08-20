@@ -78,9 +78,23 @@ td .lift{display:block;font-size:11.5px;font-variant-numeric:tabular-nums}
 .empty{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
   padding:32px;text-align:center;color:var(--ink-2)}
 footer{margin-top:24px;color:var(--ink-3);font-size:12px}
+
+/* Coverage pill in the header counts row. */
+.count.cov{background:var(--bg);border-color:var(--ink-3);color:var(--ink-2)}
+.cov-note{color:var(--ink-3)}
+
+/* Top traffic opportunities. */
+.opps{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 16px 6px;margin-top:20px}
+.opps h2{margin:0 0 4px;font-size:15px;letter-spacing:-.01em}
+.opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2)}
+.opps table{font-size:13.5px}
+.opps tbody th{font-weight:600}
+
 @media (max-width:560px){
   body{padding:18px 12px 40px}
   table{font-size:12.5px;min-width:520px} th,td{padding:8px 7px}
+  .opps table{min-width:0}
   .pill{margin-left:0}
 }
 </style>
@@ -90,7 +104,7 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
     <h1>Live A/B Tests</h1>
     <div class="sub">8 tests running &middot; First Day Life Inc.
       &middot; data pulled 2026-08-20T17:43Z</div>
-    <div class="counts"><span class="count"><b>8</b> needs time</span></div>
+    <div class="counts"><span class="count"><b>8</b> needs time</span><span class="count cov"><b>71.0%</b> of paid LP sessions under test <span class="cov-note">(3 groups, deduplicated)</span></span></div>
     <div class="tools">
       <button data-act="open" type="button">Expand all</button>
       <button data-act="close" type="button">Collapse all</button>
@@ -106,12 +120,13 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         <span class="stat"><b>43</b><small>days live</small></span>
         <span class="stat"><b>336</b><small>variant orders</small></span>
         <span class="stat"><b class="up">+3.1%</b><small>RPV</small></span>
+        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-07-07 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready</div>
+    <div class="meta">Started 2026-07-07 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready &middot; No group tag — traffic share unknown</div>
     <p class="note">MEASUREMENT WARNING — read this before trusting any other row. This is an A/A test, so both groups should be identical, yet 44 days in it still shows near-certain differences on multiple funnel steps: checkout-begin rate +17.1% (p2bb 0.998), PDP-view rate +8.1% (0.988), ATC +8.2% (0.969). The pattern has persisted across pulls rather than washing out, which is what makes it credible as a setup problem rather than noise. One concrete asymmetry in the config: the control group&#x27;s redirect is marked skip=true while the challenger redirects to the same URL, so the two groups are not being treated identically. Until this is explained, treat every lift on this account as suspect.</p>
     <div class="t-scroll">
     <table>
@@ -132,13 +147,14 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         <span class="stat"><b>21</b><small>days live</small></span>
         <span class="stat"><b>31</b><small>variant orders</small></span>
         <span class="stat"><b class="down">-1.5%</b><small>ATC</small></span>
+        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-07-29 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready</div>
-    <p class="note">Starved of traffic: 21 days live for 31 vs 33 orders — and the order counts have not moved at all since yesterday&#x27;s pull. At this rate it will never resolve. Every confidence interval spans zero by a wide margin. Kill it or give it materially more traffic.</p>
+    <div class="meta">Started 2026-07-29 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready &middot; Unmatched group KCM-Sales — no traffic data</div>
+    <p class="note">Starved of traffic: 21 days live for 31 vs 33 orders — and the order counts have not moved at all since yesterday&#x27;s pull. At this rate it will never resolve. Every confidence interval spans zero by a wide margin. Kill it or give it materially more traffic. Group tag [KCM-Sales] has no match in the traffic sheet; the sheet&#x27;s KCM-Melatonin group (418 sessions) is very likely the same surface (/pages/kcm-sales-melatonin-lp) but the names differ, so it is left unjoined rather than guessed.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
@@ -158,12 +174,13 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         <span class="stat"><b>20</b><small>days live</small></span>
         <span class="stat"><b>140</b><small>variant orders</small></span>
         <span class="stat"><b class="down">-4.9%</b><small>ATC</small></span>
+        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-07-31 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready</div>
+    <div class="meta">Started 2026-07-31 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready &middot; Unmatched group Broad KCM PDP — no traffic data</div>
     <p class="note">20 days live for 127 vs 140 orders — a tiny denominator, so the swings are not interpretable. Sign conflict persists: the primary metric (ATC) is down 4.9% while RPV is up 22.9%, and that gain is basket value (AOV +15.0%), not more buyers. Intelligems estimates +$4,896/mo.</p>
     <div class="t-scroll">
     <table>
@@ -179,17 +196,18 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">Add Ingredients Button to Buy Box Module</span>
+      <span class="t-name">[Broad PDP] Add Ingredients Button to Buy Box Module</span>
       <span class="stats">
         <span class="stat"><b>5</b><small>days live</small></span>
         <span class="stat"><b>4,214</b><small>variant orders</small></span>
         <span class="stat"><b class="up">+0.1%</b><small>RPV</small></span>
+        <span class="stat"><b>43.7%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-14 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready</div>
+    <div class="meta">Started 2026-08-14 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups Broad PDP &rarr; 23,397 sessions (43.7%)</div>
     <p class="note">Best-powered test on the account (~189k visitors, ~4.2k orders per group) and it is converging on no effect: yesterday&#x27;s +1.6% RPV is now +0.06%, and the monthly estimate fell from +$42,294 to +$1,608. CVR is now marginally negative. This increasingly looks like a genuine null result rather than a test still waiting for signal. Intelligems reports runtime_days 7; computed it is 5.</p>
     <div class="t-scroll">
     <table>
@@ -205,17 +223,18 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">BTS Multi Product Tab Placement</span>
+      <span class="t-name">[TDK-BTS][KDE-BTS] BTS Multi Product Tab Placement</span>
       <span class="stats">
         <span class="stat"><b>2</b><small>days live</small></span>
         <span class="stat"><b>253</b><small>variant orders</small></span>
         <span class="stat"><b class="up">+17.4%</b><small>RPV</small></span>
+        <span class="stat"><b>27.3%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-18 &middot; Split 50/50 &middot; Type content/template &middot; Hero metric RPV &middot; Verdict not_ready</div>
+    <div class="meta">Started 2026-08-18 &middot; Split 50/50 &middot; Type content/template &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups TDK-BTS + KDE-BTS &rarr; 14,626 sessions (27.3%)</div>
     <p class="note">Textbook early-read decay: yesterday this showed +42.4% RPV on 166 vs 126 orders; one day and ~250 orders per group later it reads +17.4%, and the Intelligems estimate fell from +$147,377/mo to +$66,731/mo. Still directionally positive on all four metrics, still not decidable. Intelligems reports runtime_days 3; computed from startedAtTs it is 2.</p>
     <div class="t-scroll">
     <table>
@@ -236,12 +255,13 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         <span class="stat"><b>1</b><small>days live</small></span>
         <span class="stat"><b>971</b><small>variant orders</small></span>
         <span class="stat"><b class="down">-2.2%</b><small>ATC</small></span>
+        <span class="stat"><b>43.7%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-18 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready</div>
+    <div class="meta">Started 2026-08-18 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready &middot; Groups Broad PDP &rarr; 23,397 sessions (43.7%)</div>
     <p class="note">Intelligems reports runtime_days 11; the test was created 2026-08-10 but only started 2026-08-18, so it has been live 1 day. All four metrics are now negative (yesterday CVR was +4.2%, today -0.4%), and the monthly estimate deteriorated from -$16,917 to -$68,724. Not decidable yet, but nothing here is trending toward a win.</p>
     <div class="t-scroll">
     <table>
@@ -262,12 +282,13 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         <span class="stat"><b>0</b><small>days live</small></span>
         <span class="stat"><b>17</b><small>variant orders</small></span>
         <span class="stat"><b class="up">+10.7%</b><small>RPV</small></span>
+        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-20 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready</div>
+    <div class="meta">Started 2026-08-20 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready &middot; Unmatched group Cart — no traffic data</div>
     <p class="note">Started 34 minutes before this pull, on 17 vs 20 orders. Intelligems&#x27; +$271,781/mo estimate is extrapolated from that — ignore it. This replaced [Cart] UI Tweaks, which was ended today at 16:57 after 2 days; the predecessor&#x27;s read was -$91,824/mo, so the sign flip is a sample-size artifact, not a fix landing.</p>
     <div class="t-scroll">
     <table>
@@ -283,18 +304,19 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name">30% off funnel <span class="lead-note">&mdash; leading of 2 variants: Closed 52%</span></span>
+      <span class="t-name">[NEW-LP] 30% off funnel <span class="lead-note">&mdash; leading of 2 variants: Closed 52%</span></span>
       <span class="stats">
         <span class="stat"><b>0</b><small>days live</small></span>
         <span class="stat"><b>0</b><small>variant orders</small></span>
         <span class="stat"><b class="flat">&mdash;</b><small>RPV</small></span>
+        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-19 &middot; Split 0/50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict error</div>
-    <p class="note">BROKEN CONFIG — the control group is allocated 0% of traffic, so Intelligems cannot compute a verdict at all (it returns error: &quot;control variation is not present in the series&quot;). With no control arm there is no baseline and no lift can ever be calculated, however long this runs. Both challengers also have 0 orders on 22 and 41 visitors, and those two arms are configured 50/50 but received 22 vs 41 — worth watching once volume arrives. Fix the allocation before treating this as a live test. (Variation name &quot;Clsoed 30%&quot; is also misspelled in Intelligems.)</p>
+    <div class="meta">Started 2026-08-19 &middot; Split 0/50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict error &middot; Unmatched group NEW-LP — no traffic data</div>
+    <p class="note">BROKEN CONFIG — the control group is allocated 0% of traffic, so Intelligems cannot compute a verdict at all (it returns error: &quot;control variation is not present in the series&quot;). With no control arm there is no baseline and no lift can ever be calculated, however long this runs. Both challengers also have 0 orders on 22 and 41 visitors, and those two arms are configured 50/50 but received 22 vs 41 — worth watching once volume arrives. Fix the allocation before treating this as a live test. (Variation name &quot;Clsoed 30%&quot; is also misspelled in Intelligems.) Group tag [NEW-LP] has no match in the traffic sheet — the new closed-funnel pages are redirect destinations, not ad landing pages, so no ad sessions are attributed to them. Its inbound traffic actually arrives via TDK-BTS, KDE-BTS and the hiddenhunger LP.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
@@ -305,6 +327,19 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
     <a class="ig-link" href="https://app.intelligems.io/experiment/1b5f03e3-fb44-47e5-bb86-b9ca2eaea605" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
   </div>
 </details>
+  
+<section class="opps">
+  <h2>Top traffic opportunities</h2>
+  <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
+    29.0% of paid LP sessions going untested. Source: Meta ads by landing-page group, 2026-08-19 (1 day).</p>
+  <div class="t-scroll">
+  <table>
+    <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
+    <th scope="col">Share</th></tr></thead>
+    <tbody><tr><th scope="row">Other</th><td class="num">15,076</td><td class="num">28.2%</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">418</td><td class="num">0.8%</td></tr></tbody>
+  </table>
+  </div>
+</section>
   <footer>Figures are live and will move while tests are running. Lift shown vs. control.
     All values pulled from the Intelligems API at the time above.</footer>
 </div>

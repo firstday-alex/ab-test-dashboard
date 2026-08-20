@@ -13,6 +13,7 @@ render as an em dash so gaps are visible rather than papered over.
 import argparse
 import html
 import json
+import re
 import sys
 from datetime import datetime
 
@@ -43,6 +44,59 @@ READINESS = {
     "could_decide": ("Could make a decision", "maybe", 1),
     "needs_time": ("Needs time", "wait", 2),
 }
+
+
+# ---------------------------------------------------------------------------
+# Traffic groups
+#
+# A test's name carries its landing-page groups in square brackets, and a test
+# may span several: "[TDK-BTS][KDE-BTS] Name" covers both. Sessions per group
+# come from `traffic.groups` in the input JSON.
+#
+# Per test, traffic is the SUM over that test's own groups. Across tests it is
+# the UNION of groups, never the sum -- two tests on the same group must not
+# count that group's sessions twice. Summing instead of unioning is how a
+# coverage figure ends up above 100%.
+# ---------------------------------------------------------------------------
+def norm_group(name):
+    return " ".join(str(name).split()).strip().upper()
+
+
+def traffic_index(data):
+    """{normalized group -> (display name, sessions)} plus the denominator."""
+    traffic = data.get("traffic") or {}
+    groups = traffic.get("groups") or {}
+    idx = {norm_group(k): (k, float(v)) for k, v in groups.items()}
+    total = traffic.get("total_sessions")
+    total = float(total) if total is not None else sum(v for _, v in idx.values())
+    return idx, total
+
+
+def test_groups(test):
+    """Groups this test claims, in name order. Explicit `groups` wins if present."""
+    if test.get("groups") is not None:
+        return [str(g).strip() for g in test["groups"] if str(g).strip()]
+    return [m.strip() for m in re.findall(r"\[([^\[\]]+)\]", test.get("name") or "")]
+
+
+def resolve_traffic(test, idx):
+    """
+    -> (sessions or None, matched display names, unmatched claimed names)
+
+    sessions is None when nothing matched, so the row renders an em dash rather
+    than a zero -- 'we cannot tell' and 'no traffic' are different statements.
+    """
+    matched, missing, total = [], [], 0.0
+    for g in test_groups(test):
+        key = norm_group(g)
+        if key in idx:
+            display, sessions = idx[key]
+            if display not in matched:      # a name repeated in one title counts once
+                matched.append(display)
+                total += sessions
+        else:
+            missing.append(g)
+    return (total if matched else None), matched, missing
 
 
 # ---------------------------------------------------------------------------
@@ -128,7 +182,7 @@ def validate(test, idx):
 # ---------------------------------------------------------------------------
 # Rendering
 # ---------------------------------------------------------------------------
-def render_row(test):
+def render_row(test, tidx=None, ttotal=0.0):
     hero = test.get("hero_metric") or {}
     hero_key = hero.get("key")
     hero_label = hero.get("label") or METRIC_LABELS.get(hero_key, hero_key or "Hero metric")
@@ -153,6 +207,16 @@ def render_row(test):
         if lead and n_var > 1
         else ""
     )
+
+    # ---- traffic: sum of this test's own groups ---------------------------
+    sessions, matched, missing = resolve_traffic(test, tidx or {})
+    if sessions is None:
+        traffic_stat = '<span class="stat"><b>&mdash;</b><small>traffic</small></span>'
+    else:
+        share = f"{sessions / ttotal * 100:.1f}%" if ttotal else "&mdash;"
+        traffic_stat = (
+            f'<span class="stat"><b>{share}</b><small>traffic</small></span>'
+        )
 
     # ---- detail table -----------------------------------------------------
     head_cells = "".join(f"<th>{lab}</th>" for _, lab, _ in METRICS)
@@ -197,6 +261,18 @@ def render_row(test):
         meta_bits.append(f"View {esc(test['analytics_view'])}")
     if test.get("verdict"):
         meta_bits.append(f"Verdict {esc(test['verdict'])}")
+    if matched:
+        share = f" ({sessions / ttotal * 100:.1f}%)" if ttotal else ""
+        meta_bits.append(
+            f"Groups {esc(' + '.join(matched))} &rarr; {sessions:,.0f} sessions{share}"
+        )
+    if missing:
+        meta_bits.append(
+            f"Unmatched group{'s' if len(missing) > 1 else ''} "
+            f"{esc(', '.join(missing))} — no traffic data"
+        )
+    if not matched and not missing:
+        meta_bits.append("No group tag — traffic share unknown")
 
     link = (
         f'<a class="ig-link" href="https://app.intelligems.io/experiment/{esc(test["id"])}"'
@@ -217,6 +293,7 @@ def render_row(test):
         <span class="stat"><b>{fmt_value(test['days_live'], 'int')}</b><small>days live</small></span>
         <span class="stat"><b>{fmt_value(variant_orders, 'int')}</b><small>variant orders</small></span>
         <span class="stat"><b class="{hero_cls}">{hero_txt}</b><small>{esc(hero_label)}</small></span>
+        {traffic_stat}
       </span>
       <span class="pill {pill_cls}">{pill_label}</span>
     </span>
@@ -311,9 +388,23 @@ td .lift{display:block;font-size:11.5px;font-variant-numeric:tabular-nums}
 .empty{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
   padding:32px;text-align:center;color:var(--ink-2)}
 footer{margin-top:24px;color:var(--ink-3);font-size:12px}
+
+/* Coverage pill in the header counts row. */
+.count.cov{background:var(--bg);border-color:var(--ink-3);color:var(--ink-2)}
+.cov-note{color:var(--ink-3)}
+
+/* Top traffic opportunities. */
+.opps{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 16px 6px;margin-top:20px}
+.opps h2{margin:0 0 4px;font-size:15px;letter-spacing:-.01em}
+.opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2)}
+.opps table{font-size:13.5px}
+.opps tbody th{font-weight:600}
+
 @media (max-width:560px){
   body{padding:18px 12px 40px}
   table{font-size:12.5px;min-width:520px} th,td{padding:8px 7px}
+  .opps table{min-width:0}
   .pill{margin-left:0}
 }
 """
@@ -326,6 +417,65 @@ document.querySelectorAll('[data-act]').forEach(function(b){
   });
 });
 """
+
+
+def coverage(tests, tidx, ttotal):
+    """
+    Deduped traffic coverage across all live tests.
+
+    The union is the whole point: two tests on the same group cover that group's
+    sessions once, not twice. Summing per-test traffic instead would exceed 100%
+    the moment two tests share a group.
+    """
+    under_test = set()
+    for t in tests:
+        _, matched, _ = resolve_traffic(t, tidx)
+        under_test.update(norm_group(m) for m in matched)
+
+    tested = sum(tidx[k][1] for k in under_test)
+    idle = sorted(
+        ((disp, sess) for k, (disp, sess) in tidx.items() if k not in under_test),
+        key=lambda pair: -pair[1],
+    )
+    return tested, under_test, idle
+
+
+def render_coverage(tested, ttotal, n_groups, label):
+    if not ttotal:
+        return ""
+    pct = tested / ttotal * 100
+    return (
+        f'<span class="count cov"><b>{pct:.1f}%</b> of {esc(label)} under test'
+        f' <span class="cov-note">({n_groups} group{"s" if n_groups != 1 else ""},'
+        f' deduplicated)</span></span>'
+    )
+
+
+def render_opportunities(idle, ttotal, label, source):
+    """Groups carrying traffic with no live test on them, largest first."""
+    if not idle:
+        return ""
+    rows = "".join(
+        f"<tr><th scope=\"row\">{esc(name)}</th>"
+        f'<td class="num">{sessions:,.0f}</td>'
+        f'<td class="num">{(sessions / ttotal * 100) if ttotal else 0:.1f}%</td></tr>'
+        for name, sessions in idle
+    )
+    total_idle = sum(s for _, s in idle)
+    share = f"{total_idle / ttotal * 100:.1f}%" if ttotal else "&mdash;"
+    return f"""
+<section class="opps">
+  <h2>Top traffic opportunities</h2>
+  <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
+    {share} of {esc(label)} going untested. Source: {esc(source)}.</p>
+  <div class="t-scroll">
+  <table>
+    <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
+    <th scope="col">Share</th></tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+  </div>
+</section>"""
 
 
 def build(data):
@@ -348,6 +498,14 @@ def build(data):
         if tallies[k]
     )
 
+    traffic_meta = data.get("traffic") or {}
+    tidx, ttotal = traffic_index(data)
+    tlabel = traffic_meta.get("denominator_label") or "sessions"
+    tsource = traffic_meta.get("source") or "unspecified"
+    tested, under_test, idle = coverage(tests, tidx, ttotal)
+    counts += render_coverage(tested, ttotal, len(under_test), tlabel)
+    opps = render_opportunities(idle, ttotal, tlabel, tsource)
+
     generated = data.get("generated_at") or datetime.now().astimezone().isoformat(
         timespec="minutes"
     )
@@ -355,7 +513,7 @@ def build(data):
     org_txt = f" &middot; {esc(org)}" if org else ""
 
     rows = (
-        "".join(render_row(t) for t in tests)
+        "".join(render_row(t, tidx, ttotal) for t in tests)
         if tests
         else '<div class="empty">No A/B tests are currently live in Intelligems.</div>'
     )
@@ -379,6 +537,7 @@ def build(data):
     </div>
   </header>
   {rows}
+  {opps}
   <footer>Figures are live and will move while tests are running. Lift shown vs. control.
     All values pulled from the Intelligems API at the time above.</footer>
 </div>
