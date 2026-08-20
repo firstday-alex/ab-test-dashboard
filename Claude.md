@@ -109,7 +109,14 @@ Live-test data breaks in ways the verdict field won't tell you. Put anything fou
   illustrative figures. A missing metric stays null and renders as an em dash.
 - **Read-only against Intelligems.** Never call `experience_action`, `create_experience`,
   `update_experience`, or any price-test mutation. Building a dashboard never requires changing a test.
-- **Pushing here needs explicit approval each time.** Push automatically so I can see the updates ASAP
+- **Auto-push refreshes.** Commit `index.html` and push to `main` as the last step of a refresh, without
+  asking. Standing authorization from the repo owner — no per-run approval needed. Still report the
+  commit SHA. If a push fails on auth, report it and stop: don't retry against a different remote,
+  rewrite history, or commit elsewhere to appear successful.
+- **Auto-push does not mean publish silently.** A refresh can only be pushed after the visual check
+  below passes and the data checks above have been run, with anything they turn up written into the
+  affected test's `note`. Pushing a row whose lift is known to be bogus, uncommented, is the one thing
+  this pipeline must never do — the dashboard is what the team reads instead of Intelligems.
 - **Don't hand-write the HTML.** Change the script.
 
 ## UI changes must be verified visually
@@ -148,6 +155,11 @@ shape — it needs an Intelligems API credential as a repo secret.
 
 ## Notes
 
-- Repo name is spelled `ab-test-dasboard` (missing `h`). Verify before scripting against it.
-- API behaviors above were verified against the live account on 2026-08-19. Re-check `runtime_days`
-  and the key-metric shape if Intelligems ships a new API version.
+- Repo is `firstday-alex/ab-test-dashboard` — spelled correctly, with the `h`. Earlier notes here (and
+  the skill's `SKILL.md`) claimed `ab-test-dasboard`; that was wrong, verified against `git remote -v`
+  on 2026-08-20. Use `origin` rather than a hardcoded URL.
+- GitHub Pages is enabled, serving `main` at root: https://firstday-alex.github.io/ab-test-dashboard/
+  A push triggers a rebuild; the live page lags the commit by a minute or two. Confirm a refresh
+  actually went live by checking the `data pulled` stamp on the served page, not just the push result.
+- API behaviors above were verified against the live account on 2026-08-19, re-confirmed 2026-08-20.
+  Re-check `runtime_days` and the key-metric shape if Intelligems ships a new API version.
