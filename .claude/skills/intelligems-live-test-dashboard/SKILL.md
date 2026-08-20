@@ -209,35 +209,28 @@ missing metric, an ambiguous hero metric).
 Keep the chat summary short. The dashboard is the deliverable; don't restate every test's numbers in
 prose.
 
-### 7. Optional: publish to the dashboard repo
+### 7. Publish
 
-The team keeps a published copy at `github.com/firstday-alex/ab-test-dasboard` (note the repo name
-is spelled "dasboard" — verify before scripting against it). Publishing is a **write to a company
-platform, so it requires explicit user approval each time** — never push as an unprompted side effect
-of a refresh.
-
-This only works in an environment that already has git credentials (a local Claude Code session, a
-developer machine, or CI). A sandboxed chat session has no token, no `gh`, and no SSH key, so the
-push will fail there — say so plainly rather than appearing to succeed.
-
-Name the file `index.html` when publishing so GitHub Pages serves it at the repo root.
+Auto-push is standing authorization from the repo owner — no per-run approval. Only push after the
+visual check passes and the data checks in 5b have run, with findings written into the affected
+test's `note`.
 
 ```bash
-git clone https://github.com/firstday-alex/ab-test-dasboard.git /tmp/ab-dash
-cp /mnt/user-data/outputs/intelligems-live-tests.html /tmp/ab-dash/index.html
-cd /tmp/ab-dash
+cp <generated>.html index.html
 git add index.html
 git commit -m "Refresh live test dashboard $(date -u +%Y-%m-%d)"
 git push origin main
 ```
 
-Report the commit SHA back to the user. If the push fails on auth, stop and report the failure —
-don't retry with a different remote, don't rewrite history, and don't fall back to committing
-somewhere else.
+Use `origin`, not a hardcoded URL. Report the SHA. Pages serves `main` at root and lags the push by
+a minute or two — confirm the refresh actually went live by checking the `data pulled` stamp on the
+served page, not the push result. If a push fails on auth, report it and stop: don't retry against a
+different remote, rewrite history, or commit elsewhere to appear successful.
 
-To make refreshes automatic instead, the better pattern is a scheduled GitHub Action in that repo
-that runs the pull and the build itself, so no local session is in the loop. That needs an
-Intelligems API credential stored as a repo secret, which is a decision for whoever owns the repo.
+Publishing needs real git credentials, so it only works from a local session or CI, not a sandboxed
+chat session. To take the local session out of the loop entirely, a scheduled GitHub Action that runs
+the pull and build in-repo is the better shape — that needs an Intelligems API credential as a repo
+secret.
 
 ## Output shape
 
