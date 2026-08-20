@@ -222,10 +222,21 @@ sum.** Two tests on `Broad PDP` cover those 23,397 sessions once, not twice — 
 coverage in testing, which is impossible on its face. The script owns this arithmetic in `coverage()`;
 don't recompute it by hand.
 
-Matching is case- and whitespace-insensitive. A group tag with no row in the sheet renders an em dash
-and is called out in the expanded meta line as unmatched — **never substitute a similarly-named group.**
-`[KCM-Sales]` and the sheet's `KCM-Melatonin` are probably the same surface, but "probably" is not a
-number, so it stays unjoined until the names actually agree.
+Matching is case- and whitespace-insensitive. **Never substitute a similarly-named group** —
+`[KCM-Sale]` and the sheet's `KCM-Melatonin` may well be the same surface, but "probably" is not a
+number, so they stay unjoined until the names actually agree.
+
+Three outcomes, and the last two are different:
+
+| Test's group tags | Renders | Why |
+|---|---|---|
+| at least one in the sheet | sum of matched groups | |
+| tagged, none in the sheet | **0%** | the sheet is the complete record for the period, so a group absent from it drew no sessions. The test is still live and still belongs on the board. |
+| no bracket tag at all | em dash | nothing was claimed, so nothing is known — not the same as zero |
+
+The 0% case still prints `Group X not in the traffic sheet — counted as 0%` in the expanded meta line.
+Keep that: on the collapsed row, 0%-because-no-sessions and 0%-because-the-name-is-a-typo look
+identical, and that line is the only way to tell them apart.
 
 **The sheet is the only source for traffic share. Do not bring Intelligems visitor counts into this
 calculation.** `total_sessions` is the sum of `Sessions` across the sheet's rows, and every percentage

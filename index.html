@@ -179,19 +179,19 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
     <span class="row-main">
       <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/5aacbb4f-c08e-49f0-853f-dce08fd83446"
         target="_blank" rel="noopener"
-        title="Open in Intelligems (new tab)">[KCM-Broad] Price per Gummy</a></span>
+        title="Open in Intelligems (new tab)">[KCM-PDP] Price per Gummy</a></span>
       <span class="stats">
         <span class="stat"><b>20</b><small>days live</small></span>
         <span class="stat"><b>140</b><small>variant orders</small></span>
         <span class="stat"><b class="down">-5.6%</b><small>ATC</small></span>
-        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
+        <span class="stat"><b>0.0%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-07-31 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready &middot; Unmatched group KCM-Broad — no traffic data</div>
-    <p class="note">20 days live for 128 vs 140 orders — a tiny denominator, so the swings are not interpretable. Sign conflict persists: primary metric (ATC) down 5.6% while RPV is up 22.2%, and that gain is basket value (AOV +15.2%), not more buyers. Group tag [KCM-Broad] has no row in the refreshed traffic sheet, which now carries KDE-PDP and KCM-Melatonin but nothing matching KCM-Broad — so its traffic share is unknown rather than zero.</p>
+    <div class="meta">Started 2026-07-31 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready &middot; Group KCM-PDP not in the traffic sheet &mdash; counted as 0%</div>
+    <p class="note">20 days live for 128 vs 140 orders — a tiny denominator, so the swings are not interpretable. Sign conflict persists: primary metric (ATC) down 5.6% while RPV is up 22.2%, and that gain is basket value (AOV +15.2%), not more buyers. The KCM-PDP group has no row in yesterday&#x27;s traffic sheet, so it drew 0% of paid sessions that day — the test is still live, it just got no paid traffic on the measured day.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
@@ -329,14 +329,14 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         <span class="stat"><b>0</b><small>days live</small></span>
         <span class="stat"><b>0</b><small>variant orders</small></span>
         <span class="stat"><b class="flat">&mdash;</b><small>RPV</small></span>
-        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
+        <span class="stat"><b>0.0%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-19 &middot; Split 0/50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict error &middot; Unmatched group NEW-LP — no traffic data</div>
-    <p class="note">STILL BROKEN — control is allocated 0% of traffic, so Intelligems returns verdict error (&quot;control variation is not present in the series&quot;) and no lift can be computed however long it runs. Both challengers remain on 0 orders (34 and 52 visitors), and the two arms are configured 50/50 but received 34 vs 52. Unchanged since yesterday&#x27;s pull; fix the allocation. Group tag [NEW-LP] has no row in the traffic sheet — the closed-funnel pages are redirect destinations, not ad landing pages, so no ad sessions are attributed to them; its inbound traffic arrives via TDK-BTS, KDE-BTS and the hiddenhunger LP. (&quot;Clsoed 30%&quot; is still misspelled.)</p>
+    <div class="meta">Started 2026-08-19 &middot; Split 0/50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict error &middot; Group NEW-LP not in the traffic sheet &mdash; counted as 0%</div>
+    <p class="note">STILL BROKEN — control is allocated 0% of traffic, so Intelligems returns verdict error (&quot;control variation is not present in the series&quot;) and no lift can be computed however long it runs. Both challengers remain on 0 orders (34 and 52 visitors), and the two arms are configured 50/50 but received 34 vs 52. Unchanged since yesterday&#x27;s pull; fix the allocation. The NEW-LP group has no row in the traffic sheet, so it shows 0% of paid traffic: the closed-funnel pages are redirect destinations rather than ad landing pages, so ads never land on them directly — inbound traffic arrives via TDK-BTS, KDE-BTS and the hiddenhunger LP. (&quot;Clsoed 30%&quot; is still misspelled.)</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>

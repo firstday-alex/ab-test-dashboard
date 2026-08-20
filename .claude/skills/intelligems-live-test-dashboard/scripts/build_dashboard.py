@@ -114,8 +114,17 @@ def resolve_traffic(test, idx, denom=0.0):
     """
     -> (sessions or None, matched display names, unmatched names, sitewide flag)
 
-    sessions is None when nothing matched, so the row renders an em dash rather
-    than a zero -- 'we cannot tell' and 'no traffic' are different statements.
+    Three outcomes, and the difference between the last two matters:
+
+      groups matched          -> sum of their sessions
+      groups claimed, none in
+      the sheet               -> 0.0. The sheet is the complete record of the
+                                 period's sessions, so a group absent from it
+                                 drew none. The test is still live and belongs
+                                 on the board at 0%.
+      no group tag at all     -> None, rendered as an em dash. Nothing was
+                                 claimed, so nothing is known -- that is not the
+                                 same as zero.
 
     A sitewide group subsumes every other group, so the row is the whole
     denominator rather than a sum that would exceed it.
@@ -134,7 +143,9 @@ def resolve_traffic(test, idx, denom=0.0):
             missing.append(g)
     if wide:
         total = denom
-    return (total if matched else None), matched, missing, wide
+    if not matched and not missing:
+        return None, matched, missing, wide
+    return total, matched, missing, wide
 
 
 # ---------------------------------------------------------------------------
@@ -313,9 +324,11 @@ def render_row(test, tidx=None, ttotal=0.0, url_tpl=None):
             "Sitewide &mdash; on every session, so excluded from the coverage roll-up"
         )
     if missing:
+        # Keep this visible: on the collapsed row, "0% because the group drew no
+        # sessions" and "0% because the group name is a typo" look identical.
         meta_bits.append(
-            f"Unmatched group{'s' if len(missing) > 1 else ''} "
-            f"{esc(', '.join(missing))} — no traffic data"
+            f"Group{'s' if len(missing) > 1 else ''} {esc(', '.join(missing))}"
+            " not in the traffic sheet &mdash; counted as 0%"
         )
     if not matched and not missing:
         meta_bits.append("No group tag — traffic share unknown")
