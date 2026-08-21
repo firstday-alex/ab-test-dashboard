@@ -453,6 +453,11 @@ td .lift{display:block;font-size:11.5px;font-variant-numeric:tabular-nums}
 .empty{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
   padding:32px;text-align:center;color:var(--ink-2)}
 footer{margin-top:24px;color:var(--ink-3);font-size:12px}
+/* Pull stamp repeated at the page foot: on a long page the header stamp
+   scrolls away, and a stale dashboard that looks current is the failure mode. */
+.stamp{color:var(--ink-2);padding:9px 12px;margin-bottom:8px;background:var(--bg);
+  border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}
+.stamp b{color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* Coverage pill in the header counts row. */
 .count.cov{background:var(--bg);border-color:var(--ink-3);color:var(--ink-2)}
@@ -616,8 +621,11 @@ def build(data):
   </header>
   {rows}
   {opps}
-  <footer>Figures are live and will move while tests are running. Lift shown vs. control.
-    All values pulled from the Intelligems API at the time above.</footer>
+  <footer>
+    <div class="stamp"><b>Last pulled {esc(generated)}</b> &mdash; Intelligems test metrics.
+      Traffic groups: {esc(tsource)}.</div>
+    Figures are live and will move while tests are running. Lift shown vs. control.
+  </footer>
 </div>
 <script>{JS}</script>
 </body></html>"""

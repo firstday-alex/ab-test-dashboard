@@ -278,6 +278,12 @@ python3 scripts/build_dashboard.py /home/claude/live_tests.json \
   -o /mnt/user-data/outputs/intelligems-live-tests.html
 ```
 
+The page carries the pull stamp twice: in the header sub-line and again as a footnote at the very
+bottom of the page. Keep both. On a long board the header scrolls out of view, and a stale dashboard
+that looks current is the failure mode this exists to prevent. The footnote names both sources
+separately, because they have different windows — Intelligems metrics are live as of `generated_at`,
+while the traffic groups come from whatever period `traffic.source` describes.
+
 Always write to the same filename, `intelligems-live-tests.html`. "Refresh" means regenerate the
 whole file from a fresh pull — there's no incremental update path and no state carried between runs,
 so a refresh is just this workflow run again. Present the file, then give a 2–4 line chat summary:
