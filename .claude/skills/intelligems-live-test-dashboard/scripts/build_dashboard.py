@@ -204,7 +204,7 @@ def leader(test):
     scored = [
         (v["metrics"].get(key, {}).get("value"), v)
         for v in cands
-        if v.get("metrics", {}).get(key, {}).get("value") is not None
+        if (v.get("metrics") or {}).get(key) and (v.get("metrics") or {})[key].get("value") is not None
     ]
     if not scored:
         return cands[0]
@@ -278,7 +278,9 @@ def render_row(test, tidx=None, ttotal=0.0, url_tpl=None):
         is_ctrl = bool(v.get("is_control"))
         cells = []
         for key, _, kind in METRICS:
-            m = v.get("metrics", {}).get(key, {})
+            # An absent key and an explicit null both mean "not returned" -- the
+            # JSON spec allows either, and both must render as an em dash.
+            m = (v.get("metrics") or {}).get(key) or {}
             val = fmt_value(m.get("value"), kind)
             if is_ctrl:
                 cells.append(f'<td><span class="val">{val}</span></td>')
