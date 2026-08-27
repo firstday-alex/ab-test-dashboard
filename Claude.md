@@ -7,7 +7,8 @@ by GitHub Pages; it is not hand-edited.
 
 A single self-contained HTML file listing every Intelligems A/B test currently running. Each test is
 one collapsible row: name, days live, variant orders, lift on the hero metric, and a readiness badge.
-Expanding a row reveals CVR, RPV, AOV, and ATC per variation with lift vs. control.
+Expanding a row reveals CVR, RPV, AOV, ATC, cart abandonment, and checkout completion per variation
+with lift vs. control.
 
 Everything in `index.html` is regenerated from a fresh Intelligems pull. There is no incremental
 update path and no state carried between runs — a "refresh" is the whole pipeline run again.
@@ -15,9 +16,13 @@ update path and no state carried between runs — a "refresh" is the whole pipel
 ## Repo layout
 
 ```
-index.html                  generated dashboard, served by Pages — do not hand-edit
-scripts/build_dashboard.py  renders index.html from a pulled JSON file
+index.html                       generated dashboard, served by Pages — do not hand-edit
+.claude/skills/intelligems-live-test-dashboard/
+    SKILL.md                     the refresh workflow
+    scripts/build_dashboard.py   renders index.html from a pulled JSON file
 ```
+
+The build script lives under the skill directory — there is no top-level `scripts/`.
 
 Layout and formatting live in `build_dashboard.py`. If the dashboard needs to look different, change
 the script and regenerate. Editing `index.html` directly means the next refresh silently reverts it.
@@ -31,23 +36,32 @@ The `intelligems-live-test-dashboard` skill owns this workflow. In short:
 2. `search_experiments(status="started")` → the live A/B tests. Experiments only; `search_experiences`
    returns evergreen programs, which this dashboard deliberately excludes.
 3. Per test, two calls:
-   - `analyze_experience(experienceId=…, view="overview", testResult=true)` → all four metrics per
+   - `analyze_experience(experienceId=…, view="overview", testResult=true)` → every metric below per
      variation, plus visitors, orders, variation names, `isControl`, and split percentages.
    - `get_experience(id=…)` → only for the primary key metric.
-4. Write the pulled JSON, then `python3 scripts/build_dashboard.py <pulled.json> -o index.html`.
+4. Write the pulled JSON, then
+   `python3 .claude/skills/intelligems-live-test-dashboard/scripts/build_dashboard.py <pulled.json> -o index.html`.
 
 Pull everything before rendering so the whole dashboard reflects one moment in time.
 
 ### Metric keys
 
-| Column   | Intelligems key           |
-|----------|---------------------------|
-| CVR      | `conversion_rate`         |
-| RPV      | `net_revenue_per_visitor` |
-| AOV      | `net_revenue_per_order`   |
-| ATC      | `add_to_cart_rate`        |
-| Visitors | `n_visitors`              |
-| Orders   | `n_orders`                |
+| Column          | Intelligems key                       |
+|-----------------|---------------------------------------|
+| CVR             | `conversion_rate`                     |
+| RPV             | `net_revenue_per_visitor`             |
+| AOV             | `net_revenue_per_order`               |
+| ATC             | `add_to_cart_rate`                    |
+| Cart aband.     | `abandoned_cart_rate`                 |
+| Checkout compl. | `abandoned_checkout_rate` — see below  |
+| Visitors        | `n_visitors`                          |
+| Orders          | `n_orders`                            |
+
+Checkout completion is **not** an API metric. Store `abandoned_checkout_rate` as pulled; the build
+script renders the completion column as `1 - rate` via its `COMPLEMENT_OF` registry, and recomputes
+the lift from the two completion values — the lift of a complement is not the negated lift of the
+source. Abandonment metrics carry `higher_is_better=False` in `METRICS`, which flips the lift colour
+only; the printed sign always follows the data.
 
 Take `value` and `uplift.value`. The dashboard is deliberately lift-only — the confidence intervals
 and p2bb/p2bc that come back on every metric are for interpretation in chat, not for these rows.

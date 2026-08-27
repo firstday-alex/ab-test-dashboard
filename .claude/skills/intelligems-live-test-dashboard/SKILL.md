@@ -2,9 +2,10 @@
 name: intelligems-live-test-dashboard
 description: >
   Pull every currently-live A/B test from the Intelligems MCP and build (or refresh) a collapsible
-  HTML dashboard where each test is one row that expands to reveal CVR, RPV, AOV, and ATC per
-  variation. Use this skill whenever the user asks to "refresh the test dashboard", "what tests are
-  live", "show me all our active tests", "how are our running tests doing", "update the dashboard",
+  HTML dashboard where each test is one row that expands to reveal CVR, RPV, AOV, ATC, cart
+  abandonment, and checkout completion per variation. Use this skill whenever the user asks to
+  "refresh the test dashboard", "what tests are live", "show me all our active tests", "how are our
+  running tests doing", "update the dashboard",
   "live test dashboard", "test tracker dashboard", or wants a single view of all in-flight
   experiments rather than a readout of one specific test. Also trigger on vaguer asks like "where do
   our tests stand" or "anything ready to call?" — those are this dashboard, not a single-test
@@ -65,21 +66,40 @@ so don't re-derive those. Note `get_experience` responses can be very large when
 onsite edits (injected HTML/CSS/JS is returned inline), so pull it once per test and extract only
 what you need.
 
-`analyze_experience` with `view="overview"` returns per variation, in one shot, all four metrics
-this dashboard needs plus visitors and orders. Each statistical metric arrives as an object with
+`analyze_experience` with `view="overview"` returns per variation, in one shot, every metric this
+dashboard needs plus visitors and orders. Each statistical metric arrives as an object with
 `value`, `ci_low`, `ci_high`, `plus_minus`, `p2bb`, `p2bc`, and `uplift` — take `value` and
 `uplift.value` and ignore the rest; this dashboard is deliberately lift-only.
 
 Metric keys to read:
 
-| Dashboard column | Intelligems key             |
-|------------------|-----------------------------|
-| CVR              | `conversion_rate`           |
-| RPV              | `net_revenue_per_visitor`   |
-| AOV              | `net_revenue_per_order`     |
-| ATC              | `add_to_cart_rate`          |
-| Visitors         | `n_visitors`                |
-| Orders           | `n_orders`                  |
+| Dashboard column  | Intelligems key             |
+|-------------------|-----------------------------|
+| CVR               | `conversion_rate`           |
+| RPV               | `net_revenue_per_visitor`   |
+| AOV               | `net_revenue_per_order`     |
+| ATC               | `add_to_cart_rate`          |
+| Cart aband.       | `abandoned_cart_rate`       |
+| Checkout compl.   | *derived* — see below       |
+| Visitors          | `n_visitors`                |
+| Orders            | `n_orders`                  |
+
+**Checkout completion is not an API metric.** Intelligems returns the abandonment side,
+`abandoned_checkout_rate` (abandoned checkouts ÷ checkouts started). Put that key in the JSON exactly
+as pulled — `build_dashboard.py` renders the completion column from it as `1 − rate`, via the
+`COMPLEMENT_OF` registry. Don't compute the completion figure yourself and don't store it: the input
+JSON stays a faithful record of what the API returned, and the arithmetic lives in one reviewable
+place in the script.
+
+Two traps in that arithmetic, both already handled by the script — leave them there:
+
+- **The lift of a complement is not the negated lift of the source.** Going 49.75% → 50.22% on
+  abandonment is +0.94%; the matching completion move is −0.94% only because the rate sits near 50%.
+  Away from 50% they diverge (on the 2026-08-27 board, a −3.8% abandonment lift rendered as +4.1%
+  completion). Never reuse the API's uplift on the source metric for the derived column.
+- **Higher is worse on abandonment.** `METRICS` entries carry a `higher_is_better` flag that flips
+  the lift *colour* only; the printed sign always follows the data. Without it a rise in cart
+  abandonment renders green, which is precisely the quiet misread this dashboard exists to prevent.
 
 Note that `get_variation_overview` does **not** expose `add_to_cart_rate` — that's why
 `analyze_experience` is the call to make here. Don't split the pull across both tools.
@@ -149,7 +169,9 @@ Save to `/home/claude/live_tests.json`. Uplift values are fractions as returned 
             "conversion_rate": { "value": 0.0219 },
             "net_revenue_per_visitor": { "value": 1.42 },
             "net_revenue_per_order": { "value": 64.8 },
-            "add_to_cart_rate": { "value": 0.0871 }
+            "add_to_cart_rate": { "value": 0.0871 },
+            "abandoned_cart_rate": { "value": 0.6803 },
+            "abandoned_checkout_rate": { "value": 0.4971 }
           }
         },
         {
@@ -158,7 +180,9 @@ Save to `/home/claude/live_tests.json`. Uplift values are fractions as returned 
             "conversion_rate": { "value": 0.0231, "uplift": 0.0548 },
             "net_revenue_per_visitor": { "value": 1.51, "uplift": 0.0634 },
             "net_revenue_per_order": { "value": 65.4, "uplift": 0.0093 },
-            "add_to_cart_rate": { "value": 0.0902, "uplift": 0.0356 }
+            "add_to_cart_rate": { "value": 0.0902, "uplift": 0.0356 },
+            "abandoned_cart_rate": { "value": 0.6641, "uplift": -0.0238 },
+            "abandoned_checkout_rate": { "value": 0.4802, "uplift": -0.034 }
           }
         }
       ]
@@ -323,17 +347,26 @@ badge. Rows sort by readiness (call it → could decide → needs time), then by
 so the tests wanting attention sit at the top.
 
 Expanded: metadata line (start date, split, type, hero metric, analytics view, raw verdict), then a
-table with one row per variation — Visitors, Orders, CVR, RPV, AOV, ATC — control first, with values
-plus lift vs. control on each challenger, and a link back to the test in Intelligems.
+table with one row per variation — Visitors, Orders, CVR, RPV, AOV, ATC, Cart aband., Checkout compl.
+— control first, with values plus lift vs. control on each challenger, and a link back to the test in
+Intelligems.
+
+Eight columns is wide. Below 560px the table scrolls horizontally inside its own `.t-scroll`
+container while the page body does not — that is the intended behaviour, not a layout bug. Raise
+`table{min-width:…}` in that media query if you add another column.
 
 ## Variations on the request
 
 - **"Just tell me / no file"** — pull the same data and answer in a compact markdown table. Don't
   build the HTML if the user doesn't want a file.
 - **"Add a metric"** (profit/visitor, units per order, subscription share) — `analyze_experience`
-  returns many more metrics than these four. Add the key to the `METRICS` list at the top of
-  `build_dashboard.py` with a format of `pct`, `money`, or `int`, and register a label in
-  `METRIC_LABELS`. Prefer editing the script over hand-writing HTML.
+  returns many more metrics than these six. Add a 4-tuple to the `METRICS` list at the top of
+  `build_dashboard.py` — `(key, column label, "pct" | "money" | "int", higher_is_better)` — and
+  register a label in `METRIC_LABELS`. Set `higher_is_better=False` for anything where a rise is a
+  regression (abandonment, bounce, refunds) so the lift colour matches the direction. If the metric
+  is the exact complement of one the API returns, add it to `COMPLEMENT_OF` instead of storing a
+  computed number in the JSON. Then re-run the visual check — a new column changes the table width.
+  Prefer editing the script over hand-writing HTML.
 - **"Segment by device / new vs returning"** — re-pull with `view="audience"` and
   `audience="device_type"`, and say clearly in the summary that the dashboard is filtered.
 - **"Include paused tests"** — run `search_experiments(status="paused")` too and add the status to
@@ -347,7 +380,14 @@ plus lift vs. control on each challenger, and a link back to the test in Intelli
   the badge exists precisely to stop a decision being made on a 3-day read.
 - CVR lift and AOV lift multiply into RPV lift. If RPV is up but CVR is flat, the gain is coming
   from basket value, not from more buyers — worth flagging in the summary.
-- ATC up with CVR flat means the change moved intent but something downstream ate it. That's a
-  pointer to run the full readout skill on that test, and worth calling out.
+- ATC up with CVR flat means the change moved intent but something downstream ate it. The two
+  abandonment columns now say *where* it was eaten: cart abandonment up means they never reached
+  checkout, checkout completion down means they reached it and bailed. Name whichever one moved —
+  that's the difference between a cart-drawer problem and a checkout problem, and it's the single
+  most useful thing this table adds. Either way it's a pointer to run the full readout skill on that
+  test.
+- The funnel columns are the sanity check on a headline. A test claiming a CVR win with cart
+  abandonment flat and checkout completion flat is claiming conversions that appeared from nowhere;
+  that's a measurement smell, not a win. Say so in the note.
 - A challenger winning on the hero metric while losing on the others isn't automatically a winner.
   When the picture is mixed, say so rather than letting the single hero lift imply a verdict.

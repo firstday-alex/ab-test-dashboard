@@ -1,7 +1,8 @@
 # ab-test-dashboard
 
 Published copy of First Day's live A/B test dashboard — every Intelligems experiment currently
-running, one collapsible row each.
+running, one collapsible row each. Expanding a row shows CVR, RPV, AOV, ATC, cart abandonment, and
+checkout completion per variation, with lift vs. control.
 
 **Live:** https://firstday-alex.github.io/ab-test-dashboard/
 
@@ -45,9 +46,9 @@ a commit SHA back rather than an approval prompt.
    deliberately excludes.
 
 3. **Two calls per test.** Pull everything before rendering, so the whole board reflects one moment.
-   - `analyze_experience(experienceId=…, view="overview", testResult=true)` — all four metrics per
-     variation, plus visitors, orders, variation names, `isControl`, split percentages, and the
-     verdict.
+   - `analyze_experience(experienceId=…, view="overview", testResult=true)` — every metric the
+     dashboard shows, per variation, plus visitors, orders, variation names, `isControl`, split
+     percentages, and the verdict.
    - `get_experience(id=…)` — needed for exactly one thing: which key metric is primary.
 
 4. **Pull the traffic sheet.** Sessions per landing-page group come from a published Google Sheet
@@ -96,8 +97,9 @@ index.html                                                   generated dashboard
     build_dashboard.py                                       renders index.html from a pulled JSON file
 ```
 
-Note the script lives **under the skill directory**, not in a top-level `scripts/`. `CLAUDE.md` still
-refers to `scripts/build_dashboard.py`; that path does not exist.
+Note the script lives **under the skill directory**, not in a top-level `scripts/`. There is no
+top-level `scripts/` — earlier revisions of `CLAUDE.md` pointed at one; that was corrected
+2026-08-27.
 
 ---
 
@@ -117,6 +119,10 @@ reads *instead of* Intelligems.
   and say plainly they aren't interpretable.
 - **Sign conflicts** — CVR up with AOV down nets out in RPV. Name which side is driving it rather
   than letting the hero lift stand alone.
+- **Where the funnel leaked** — the two abandonment columns localise an ATC-up/CVR-flat result: cart
+  abandonment up means they never reached checkout, checkout completion down means they reached it
+  and bailed. Say which one moved. Conversely, a CVR win with both funnel columns flat is claiming
+  conversions from nowhere — treat that as a measurement smell, not a win.
 
 The readiness badge comes from `testResult.verdict`, never from judgment. Never upgrade a badge
 because a lift looks big — the badge exists specifically to stop a decision being made on a
@@ -130,8 +136,8 @@ The layout has broken before in a way that passed every text-based check: CSS gr
 inside a media query put two stat blocks in the same cell, and string assertions against the HTML all
 passed while the render was visibly garbled.
 
-If you changed `build_dashboard.py`'s layout, render at 380px, 760px and 1180px and test every pair
-of summary-row boxes for rectangle intersection:
+If you changed `build_dashboard.py`'s layout, render at 380px, 760px and 1180px — **collapsed and
+expanded** — and test every pair of summary-row boxes for rectangle intersection:
 
 ```python
 boxes = pg.eval_on_selector_all(
@@ -139,6 +145,12 @@ boxes = pg.eval_on_selector_all(
     "els => els.map(e => { const r = e.getBoundingClientRect();"
     "return {t:r.top, b:r.bottom, l:r.left, rt:r.right} })")
 ```
+
+Also assert that the page body never scrolls sideways, that no `.t-scroll` container is wider than
+the viewport, and that no `tbody` cell has a zero-size box. The detail table is eight columns wide and
+is *supposed* to scroll horizontally inside `.t-scroll` on narrow screens — that's containment
+working, not a bug. If you add a column, raise `table{min-width:…}` in the `max-width:560px` media
+query.
 
 Look at the screenshots too. Playwright isn't installed system-wide here; a throwaway venv is the
 easy route:
@@ -188,6 +200,12 @@ to a file and you extract what you need with `jq` — for `get_experience` that'
 
 **Parameter naming is inconsistent.** Most tools take the UUID as `id`; `analyze_experience` and
 `generate_intelligems_graph` take it as `experienceId`. On a validation error, retry with the other.
+
+**There is no checkout-completion metric.** The API returns the abandonment side,
+`abandoned_checkout_rate` (abandoned checkouts ÷ checkouts started). Store that as pulled; the build
+script renders the completion column as `1 − rate` and recomputes its lift from the two completion
+values. Don't reuse the API's uplift on the abandonment metric for it — the lift of a complement is
+not the negated lift of the source, and the two only coincide when the rate sits near 50%.
 
 **A test with a 0%-allocated control returns `verdict: "error"`** — `"control variation is not
 present in the series"` — and no uplift figures at all. Render the raw levels, mark readiness

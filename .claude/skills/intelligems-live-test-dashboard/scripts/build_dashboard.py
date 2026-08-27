@@ -18,21 +18,37 @@ import sys
 from datetime import datetime
 
 # ---------------------------------------------------------------------------
-# Metric registry: the four detail metrics, in display order.
-# `fmt` controls rendering; `label` is the column header.
+# Metric registry: the detail metrics, in display order.
+#
+# `fmt` controls rendering; `label` is the column header. `higher_is_better`
+# drives the lift COLOUR only -- the printed sign always follows the data. It
+# exists because abandonment rates run the other way: +4% cart abandonment is a
+# regression, and colouring it green because the number went up is exactly the
+# kind of quiet misread this dashboard is supposed to prevent.
 # ---------------------------------------------------------------------------
 METRICS = [
-    ("conversion_rate", "CVR", "pct"),
-    ("net_revenue_per_visitor", "RPV", "money"),
-    ("net_revenue_per_order", "AOV", "money"),
-    ("add_to_cart_rate", "ATC", "pct"),
+    ("conversion_rate", "CVR", "pct", True),
+    ("net_revenue_per_visitor", "RPV", "money", True),
+    ("net_revenue_per_order", "AOV", "money", True),
+    ("add_to_cart_rate", "ATC", "pct", True),
+    ("abandoned_cart_rate", "Cart aband.", "pct", False),
+    ("checkout_completion_rate", "Checkout compl.", "pct", True),
 ]
+
+# Metrics computed here rather than pulled, as the exact complement of a metric
+# the API does return: {derived key -> source key}. See metric_cell().
+COMPLEMENT_OF = {
+    "checkout_completion_rate": "abandoned_checkout_rate",
+}
 
 METRIC_LABELS = {
     "conversion_rate": "CVR",
     "net_revenue_per_visitor": "RPV",
     "net_revenue_per_order": "AOV",
     "add_to_cart_rate": "ATC",
+    "abandoned_cart_rate": "Cart abandonment",
+    "abandoned_checkout_rate": "Checkout abandonment",
+    "checkout_completion_rate": "Checkout completion",
     "gross_profit_per_visitor": "Profit/visitor",
     "n_orders": "Orders",
     "net_revenue": "Net revenue",
@@ -163,13 +179,21 @@ def fmt_value(value, kind):
     return f"{value:,.2f}"
 
 
-def fmt_lift(uplift):
-    """Signed lift with direction class. uplift is a fraction (0.055 -> +5.5%)."""
+def fmt_lift(uplift, higher_is_better=True):
+    """
+    Signed lift with a direction class. uplift is a fraction (0.055 -> +5.5%).
+
+    The printed number always carries the true sign. `higher_is_better=False`
+    only swaps the good/bad colour, for metrics like abandonment where a rise is
+    a regression.
+    """
     if uplift is None:
         return "&mdash;", "flat"
     pct = uplift * 100
-    cls = "up" if pct > 0.05 else ("down" if pct < -0.05 else "flat")
-    return f"{pct:+.1f}%", cls
+    if abs(pct) <= 0.05:
+        return f"{pct:+.1f}%", "flat"
+    good = (pct > 0) if higher_is_better else (pct < 0)
+    return f"{pct:+.1f}%", "up" if good else "down"
 
 
 def esc(text):
@@ -190,6 +214,38 @@ def challengers(test):
     return [v for v in test["variations"] if not v.get("is_control")]
 
 
+def metric_cell(v, key, ctrl=None):
+    """
+    -> {"value":..., "uplift":...} for `key` on variation `v`, or {} if absent.
+
+    Most keys are read straight off the pull. A key in COMPLEMENT_OF is the
+    exact complement of one the API does return -- checkout completion is
+    1 - abandoned_checkout_rate, an identity on a pulled number rather than an
+    estimate -- so it is derived here instead of being stored. That keeps the
+    input JSON a faithful record of what Intelligems actually returned, and
+    keeps the arithmetic in one reviewable place.
+
+    The lift of a complement has to be recomputed from the two complement
+    values: it is NOT the negated lift of the source metric. Going from 49.75%
+    to 50.22% abandonment is +0.94%, while the matching completion move is
+    -0.94% only because the rate happens to sit near 50%. Away from 50% the two
+    diverge, so the API's uplift on the source is not reusable here. With no
+    control value to compare against, the lift stays absent and renders as an
+    em dash, same as any other missing number.
+    """
+    src = COMPLEMENT_OF.get(key)
+    if not src:
+        return (v.get("metrics") or {}).get(key) or {}
+
+    val = ((v.get("metrics") or {}).get(src) or {}).get("value")
+    out = {"value": None if val is None else 1.0 - val}
+    if ctrl is not None and v is not ctrl and val is not None:
+        cval = ((ctrl.get("metrics") or {}).get(src) or {}).get("value")
+        if cval is not None and cval != 1.0:
+            out["uplift"] = (1.0 - val) / (1.0 - cval) - 1.0
+    return out
+
+
 def leader(test):
     """
     The challenger the collapsed row summarizes: highest value on the hero metric.
@@ -202,9 +258,9 @@ def leader(test):
     if not key:
         return cands[0]
     scored = [
-        (v["metrics"].get(key, {}).get("value"), v)
+        (metric_cell(v, key).get("value"), v)
         for v in cands
-        if (v.get("metrics") or {}).get(key) and (v.get("metrics") or {})[key].get("value") is not None
+        if metric_cell(v, key).get("value") is not None
     ]
     if not scored:
         return cands[0]
@@ -243,8 +299,13 @@ def render_row(test, tidx=None, ttotal=0.0, url_tpl=None):
 
     hero_uplift = None
     if lead and hero_key:
-        hero_uplift = lead["metrics"].get(hero_key, {}).get("uplift")
-    hero_txt, hero_cls = fmt_lift(hero_uplift)
+        hero_uplift = metric_cell(lead, hero_key, ctrl).get("uplift")
+    # A test primaried on an abandonment metric reads the other way; look the
+    # direction up rather than assuming up == good on the collapsed row too.
+    hero_better = next(
+        (hb for k, _, _, hb in METRICS if k == hero_key), True
+    )
+    hero_txt, hero_cls = fmt_lift(hero_uplift, hero_better)
 
     variant_orders = lead.get("orders") if lead else None
     pill_label, pill_cls, _ = READINESS[test["readiness"]]
@@ -272,20 +333,20 @@ def render_row(test, tidx=None, ttotal=0.0, url_tpl=None):
         )
 
     # ---- detail table -----------------------------------------------------
-    head_cells = "".join(f"<th>{lab}</th>" for _, lab, _ in METRICS)
+    head_cells = "".join(f"<th>{lab}</th>" for _, lab, _, _ in METRICS)
     body_rows = []
     for v in test["variations"]:
         is_ctrl = bool(v.get("is_control"))
         cells = []
-        for key, _, kind in METRICS:
+        for key, _, kind, higher_better in METRICS:
             # An absent key and an explicit null both mean "not returned" -- the
             # JSON spec allows either, and both must render as an em dash.
-            m = (v.get("metrics") or {}).get(key) or {}
+            m = metric_cell(v, key, ctrl)
             val = fmt_value(m.get("value"), kind)
             if is_ctrl:
                 cells.append(f'<td><span class="val">{val}</span></td>')
             else:
-                lift_txt, lift_cls = fmt_lift(m.get("uplift"))
+                lift_txt, lift_cls = fmt_lift(m.get("uplift"), higher_better)
                 cells.append(
                     f'<td><span class="val">{val}</span>'
                     f'<span class="lift {lift_cls}">{lift_txt}</span></td>'
@@ -475,7 +536,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 
 @media (max-width:560px){
   body{padding:18px 12px 40px}
-  table{font-size:12.5px;min-width:520px} th,td{padding:8px 7px}
+  /* 8 columns now; below this the table scrolls inside .t-scroll rather than
+     letting the numbers crush together. Raise with any new column. */
+  table{font-size:12.5px;min-width:700px} th,td{padding:8px 7px}
   .opps table{min-width:0}
   .pill{margin-left:0}
 }
@@ -627,6 +690,10 @@ def build(data):
     <div class="stamp"><b>Last pulled {esc(generated)}</b> &mdash; Intelligems test metrics.
       Traffic groups: {esc(tsource)}.</div>
     Figures are live and will move while tests are running. Lift shown vs. control.
+    Cart abandonment is added-to-cart visitors who never began checkout; higher is worse, so
+    its lift is coloured by direction rather than by sign. Checkout completion is the
+    complement of Intelligems' abandoned-checkout rate (1 &minus; rate), and its lift is
+    computed from the two completion values, not carried over from the abandonment metric.
   </footer>
 </div>
 <script>{JS}</script>
