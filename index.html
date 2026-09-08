@@ -113,9 +113,9 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 <div class="wrap">
   <header>
     <h1>Live A/B Tests</h1>
-    <div class="sub">10 tests running &middot; First Day Life Inc.
-      &middot; data pulled 2026-08-31T14:52Z</div>
-    <div class="counts"><span class="count"><b>1</b> time to make a call</span><span class="count"><b>9</b> needs time</span><span class="count cov"><b>77.0%</b> of paid LP sessions under test <span class="cov-note">(6 groups, deduplicated)</span></span></div>
+    <div class="sub">9 tests running &middot; First Day Life Inc.
+      &middot; data pulled 2026-09-08T09:49-05:00</div>
+    <div class="counts"><span class="count"><b>1</b> time to make a call</span><span class="count"><b>8</b> needs time</span><span class="count cov"><b>46.8%</b> of paid LP sessions under test <span class="cov-note">(5 groups, deduplicated)</span></span></div>
     <div class="tools">
       <button data-act="open" type="button">Expand all</button>
       <button data-act="close" type="button">Collapse all</button>
@@ -126,29 +126,29 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/58d89c70-fd70-4793-a10b-6934de47a833"
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/86f18293-b9ad-47f0-a839-3f7cb3e34a56"
         target="_blank" rel="noopener"
-        title="Open in Intelligems (new tab)">[Broad-PDP] Buy Box Trust Badges</a></span>
+        title="Open in Intelligems (new tab)">[Broad-KDE-TDK-PDPS] Old vs New PDP</a></span>
       <span class="stats">
-        <span class="stat"><b>12</b><small>days live</small></span>
-        <span class="stat"><b>3,816</b><small>variant orders</small></span>
-        <span class="stat"><b class="down">-2.8%</b><small>ATC</small></span>
-        <span class="stat"><b>16.4%</b><small>traffic</small></span>
+        <span class="stat"><b>7</b><small>days live</small></span>
+        <span class="stat"><b>1,657</b><small>variant orders</small></span>
+        <span class="stat"><b class="down">-3.4%</b><small>ATC</small></span>
+        <span class="stat"><b>0.0%</b><small>traffic</small></span>
       </span>
       <span class="pill call">Time to make a call</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-18 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; View sitewide_orders &middot; Verdict strong_loss &middot; Groups Broad-PDP &rarr; 4,587 sessions (16.4%)</div>
-    <p class="note">Intelligems verdict: do not implement the trust-badge variant. The primary metric is ATC and the variant is down 2.8% on it (p2bb 0.010) — the verdict&#x27;s own stability read puts it at -3.4%, held 4 days, CI converged. RPV (-0.6%) and AOV (-1.3%) are also negative and CVR (+0.7%) is not significant, so nothing offsets the hero call. Intelligems estimates -$6,328/mo. Test was paused 2026-08-11 and restarted 2026-08-18; days live counts from the restart.</p>
+    <div class="meta">Started 2026-08-31 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric ATC &middot; Verdict strong_loss &middot; Group Broad-KDE-TDK-PDPS not in the traffic sheet &mdash; counted as 0%</div>
+    <p class="note">Verdict strong_loss on the primary metric (ATC -3.4%, stable for 7 days). The whole checkout funnel moves with it and these are the intervals that exclude zero: checkout begin -6.0%, contact info -6.7%, address submitted -6.9%. RPV looks flat (+0.1%) only because AOV (+2.4%) offsets CVR (-2.2%) — do not read the flat RPV as neutral. Group tag [Broad-KDE-TDK-PDPS] does not exist in the traffic sheet, so its traffic share counts as 0%; the tag needs renaming to the sheet&#x27;s group names.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">141,741</td><td class="num">3,808</td><td><span class="val">2.69%</span></td><td><span class="val">$1.65</span></td><td><span class="val">$61.29</span></td><td><span class="val">8.60%</span></td><td><span class="val">68.89%</span></td><td><span class="val">49.23%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">141,037</td><td class="num">3,816</td><td><span class="val">2.71%</span><span class="lift up">+0.7%</span></td><td><span class="val">$1.64</span><span class="lift down">-0.6%</span></td><td><span class="val">$60.49</span><span class="lift down">-1.3%</span></td><td><span class="val">8.36%</span><span class="lift down">-2.8%</span></td><td><span class="val">67.83%</span><span class="lift up">-1.5%</span></td><td><span class="val">50.53%</span><span class="lift up">+2.6%</span></td></tr></tbody>
+      <tbody><tr><th scope="row">Old<span class="tag">control</span></th><td class="num">28,425</td><td class="num">1,644</td><td><span class="val">5.78%</span></td><td><span class="val">$3.72</span></td><td><span class="val">$64.27</span></td><td><span class="val">16.09%</span></td><td><span class="val">64.21%</span></td><td><span class="val">52.35%</span></td></tr><tr><th scope="row">New</th><td class="num">29,305</td><td class="num">1,657</td><td><span class="val">5.65%</span><span class="lift down">-2.2%</span></td><td><span class="val">$3.72</span><span class="lift up">+0.1%</span></td><td><span class="val">$65.80</span><span class="lift up">+2.4%</span></td><td><span class="val">15.55%</span><span class="lift down">-3.4%</span></td><td><span class="val">63.86%</span><span class="lift up">-0.5%</span></td><td><span class="val">54.36%</span><span class="lift up">+3.8%</span></td></tr></tbody>
     </table>
     </div>
-    <a class="ig-link" href="https://app.intelligems.io/experiment/58d89c70-fd70-4793-a10b-6934de47a833" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
+    <a class="ig-link" href="https://app.intelligems.io/experiment/86f18293-b9ad-47f0-a839-3f7cb3e34a56" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
   </div>
 </details>
 <details class="test" data-readiness="wait">
@@ -159,54 +159,25 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         target="_blank" rel="noopener"
         title="Open in Intelligems (new tab)">[TRMV-BTS] A/A</a></span>
       <span class="stats">
-        <span class="stat"><b>54</b><small>days live</small></span>
-        <span class="stat"><b>428</b><small>variant orders</small></span>
-        <span class="stat"><b class="down">-1.3%</b><small>RPV</small></span>
-        <span class="stat"><b>0.7%</b><small>traffic</small></span>
+        <span class="stat"><b>62</b><small>days live</small></span>
+        <span class="stat"><b>475</b><small>variant orders</small></span>
+        <span class="stat"><b class="up">+1.2%</b><small>RPV</small></span>
+        <span class="stat"><b>0.8%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-07-07 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups TRMV-BTS &rarr; 203 sessions (0.7%)</div>
-    <p class="note">MEASUREMENT WARNING — this is an A/A test. Both arms redirect to the same URL (/pages/trmv-behind-the-science-lp, verified in the test config this session), so every metric should read flat. They do not. Checkout-begin rate is +15.1% on the second arm at p2bb 0.998, view-product-page rate +6.9% at p2bb 0.986, ATC +7.0% at p2bb 0.961, and checkout-address-submitted +9.5% at p2bb 0.949. After 54 days an A/A producing near-certain funnel lifts means the assignment or tracking setup is suspect, which puts a question mark over every other row on this board. Investigate before calling any test on this account.</p>
+    <div class="meta">Started 2026-07-07 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups TRMV-BTS &rarr; 290 sessions (0.8%)</div>
+    <p class="note">READ THIS FIRST — this is an A/A test: both arms serve the identical page, so every metric should read flat. It does not. Checkout begin rate is +15.6% with a confidence interval of +5.6% to +26.4% that never touches zero (p2bb 0.999), product-page view rate +7.7% (interval +1.8% to +13.9%, p2bb 0.995), and ATC +7.1% (p2bb 0.972). A near-certain lift between two identical experiences is not a result, it is evidence the assignment or tracking setup is broken — and because it is the same instrumentation, it casts doubt on the funnel-step readings of every other test on this account. Traffic itself is balanced (21,594/21,842), so this is not a split problem. Diagnose the measurement before acting on any test above.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">20,557</td><td class="num">404</td><td><span class="val">1.97%</span></td><td><span class="val">$1.10</span></td><td><span class="val">$55.89</span></td><td><span class="val">6.06%</span></td><td><span class="val">67.71%</span></td><td><span class="val">52.07%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">20,360</td><td class="num">428</td><td><span class="val">2.10%</span><span class="lift up">+7.0%</span></td><td><span class="val">$1.08</span><span class="lift down">-1.3%</span></td><td><span class="val">$51.55</span><span class="lift down">-7.8%</span></td><td><span class="val">6.48%</span><span class="lift up">+7.0%</span></td><td><span class="val">67.63%</span><span class="lift up">-0.1%</span></td><td><span class="val">48.52%</span><span class="lift down">-6.8%</span></td></tr></tbody>
+      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">21,842</td><td class="num">445</td><td><span class="val">2.04%</span></td><td><span class="val">$1.14</span></td><td><span class="val">$55.86</span></td><td><span class="val">6.27%</span></td><td><span class="val">67.64%</span></td><td><span class="val">52.49%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">21,594</td><td class="num">475</td><td><span class="val">2.20%</span><span class="lift up">+8.0%</span></td><td><span class="val">$1.15</span><span class="lift up">+1.2%</span></td><td><span class="val">$52.34</span><span class="lift down">-6.3%</span></td><td><span class="val">6.71%</span><span class="lift up">+7.1%</span></td><td><span class="val">67.31%</span><span class="lift up">-0.5%</span></td><td><span class="val">49.12%</span><span class="lift down">-6.4%</span></td></tr></tbody>
     </table>
     </div>
     <a class="ig-link" href="https://app.intelligems.io/experiment/f85fd482-275c-43a6-a338-12bb91b2bb1b" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
-  </div>
-</details>
-<details class="test" data-readiness="wait">
-  <summary>
-    <span class="chev" aria-hidden="true"></span>
-    <span class="row-main">
-      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/f5f72659-27a8-4e2b-9532-2cae9b8d5580"
-        target="_blank" rel="noopener"
-        title="Open in Intelligems (new tab)">[KCM-Sale] Hero Copy</a></span>
-      <span class="stats">
-        <span class="stat"><b>32</b><small>days live</small></span>
-        <span class="stat"><b>33</b><small>variant orders</small></span>
-        <span class="stat"><b class="up">+1.0%</b><small>ATC</small></span>
-        <span class="stat"><b>0.1%</b><small>traffic</small></span>
-      </span>
-      <span class="pill wait">Needs time</span>
-    </span>
-  </summary>
-  <div class="body">
-    <div class="meta">Started 2026-07-29 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups KCM-Sale &rarr; 25 sessions (0.1%)</div>
-    <p class="note">Not interpretable on revenue: 71 orders across both arms after 32 days (38 control / 33 variant). The RPV (-23.2%), AOV (-11.1%) and checkout-completion (-18.9%) swings shown below come off a couple of dozen orders and 33 vs 44 abandoned checkouts — Intelligems returns no confidence interval at all on checkout abandonment here, which is the API saying the same thing. ATC, the primary metric, is essentially flat at +1.0%. Either give it far more traffic or stop it.</p>
-    <div class="t-scroll">
-    <table>
-      <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
-      <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">3,081</td><td class="num">38</td><td><span class="val">1.23%</span></td><td><span class="val">$0.68</span></td><td><span class="val">$54.97</span></td><td><span class="val">4.09%</span></td><td><span class="val">70.63%</span></td><td><span class="val">52.86%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">3,100</td><td class="num">33</td><td><span class="val">1.06%</span><span class="lift down">-13.7%</span></td><td><span class="val">$0.52</span><span class="lift down">-23.2%</span></td><td><span class="val">$48.89</span><span class="lift down">-11.1%</span></td><td><span class="val">4.13%</span><span class="lift up">+1.0%</span></td><td><span class="val">74.22%</span><span class="lift down">+5.1%</span></td><td><span class="val">42.86%</span><span class="lift down">-18.9%</span></td></tr></tbody>
-    </table>
-    </div>
-    <a class="ig-link" href="https://app.intelligems.io/experiment/f5f72659-27a8-4e2b-9532-2cae9b8d5580" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
   </div>
 </details>
 <details class="test" data-readiness="wait">
@@ -217,22 +188,22 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         target="_blank" rel="noopener"
         title="Open in Intelligems (new tab)">[KCM-PDP] Price per Gummy</a></span>
       <span class="stats">
-        <span class="stat"><b>30</b><small>days live</small></span>
-        <span class="stat"><b>201</b><small>variant orders</small></span>
-        <span class="stat"><b class="down">-1.2%</b><small>ATC</small></span>
+        <span class="stat"><b>38</b><small>days live</small></span>
+        <span class="stat"><b>246</b><small>variant orders</small></span>
+        <span class="stat"><b class="up">+0.3%</b><small>ATC</small></span>
         <span class="stat"><b>0.0%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-07-31 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups KCM-PDP &rarr; 5 sessions (0.0%)</div>
-    <p class="note">Read the hero, not the headline: ATC is this test&#x27;s primary metric and the variant is DOWN 1.2% on it, while RPV reads +9.7% — driven by AOV (+5.0%) and CVR (+4.5%), i.e. slightly fewer carts converting for more each. Nothing is significant at 390 orders after 30 days (RPV p2bb 0.744). Traffic share reads 0.0% because the sheet records only 5 paid-LP sessions under KCM-PDP for the period; the test itself has 10,169 visitors, so the 0.0% is a statement about paid landing-page mix, not about the test&#x27;s sample.</p>
+    <div class="meta">Started 2026-07-31 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric ATC &middot; Verdict not_ready &middot; Groups KCM-PDP &rarr; 2 sessions (0.0%)</div>
+    <p class="note">Starved of traffic. 38 days live and still only ~240 orders per arm, and the traffic sheet records just 2 paid LP sessions against the KCM-PDP group for the period (0.0% share) — worth deciding whether to feed it or stop it. The primary metric is flat (ATC +0.3%); the eye-catching RPV +16.1% sits on an interval running from -9.5% to +48.8%, so it is not interpretable and must not be read as a win.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">mag<span class="tag">control</span></th><td class="num">5,040</td><td class="num">189</td><td><span class="val">3.75%</span></td><td><span class="val">$2.18</span></td><td><span class="val">$58.26</span></td><td><span class="val">10.14%</span></td><td><span class="val">63.41%</span></td><td><span class="val">55.65%</span></td></tr><tr><th scope="row">mag alt price</th><td class="num">5,129</td><td class="num">201</td><td><span class="val">3.92%</span><span class="lift up">+4.5%</span></td><td><span class="val">$2.40</span><span class="lift up">+9.7%</span></td><td><span class="val">$61.17</span><span class="lift up">+5.0%</span></td><td><span class="val">10.02%</span><span class="lift down">-1.2%</span></td><td><span class="val">61.09%</span><span class="lift up">-3.7%</span></td><td><span class="val">56.50%</span><span class="lift up">+1.5%</span></td></tr></tbody>
+      <tbody><tr><th scope="row">mag<span class="tag">control</span></th><td class="num">6,070</td><td class="num">230</td><td><span class="val">3.79%</span></td><td><span class="val">$2.15</span></td><td><span class="val">$56.74</span></td><td><span class="val">9.93%</span></td><td><span class="val">62.35%</span></td><td><span class="val">57.32%</span></td></tr><tr><th scope="row">mag alt price</th><td class="num">6,182</td><td class="num">246</td><td><span class="val">3.98%</span><span class="lift up">+5.0%</span></td><td><span class="val">$2.50</span><span class="lift up">+16.1%</span></td><td><span class="val">$62.72</span><span class="lift up">+10.5%</span></td><td><span class="val">9.96%</span><span class="lift up">+0.3%</span></td><td><span class="val">60.23%</span><span class="lift up">-3.4%</span></td><td><span class="val">58.61%</span><span class="lift up">+2.2%</span></td></tr></tbody>
     </table>
     </div>
     <a class="ig-link" href="https://app.intelligems.io/experiment/5aacbb4f-c08e-49f0-853f-dce08fd83446" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
@@ -242,41 +213,12 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
   <summary>
     <span class="chev" aria-hidden="true"></span>
     <span class="row-main">
-      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/ae005c92-1055-48ce-8818-d2c588d3e0d0"
-        target="_blank" rel="noopener"
-        title="Open in Intelligems (new tab)">[Broad-PDP] Add Ingredients Button to Buy Box Module</a></span>
-      <span class="stats">
-        <span class="stat"><b>16</b><small>days live</small></span>
-        <span class="stat"><b>8,902</b><small>variant orders</small></span>
-        <span class="stat"><b class="up">+2.3%</b><small>RPV</small></span>
-        <span class="stat"><b>16.4%</b><small>traffic</small></span>
-      </span>
-      <span class="pill wait">Needs time</span>
-    </span>
-  </summary>
-  <div class="body">
-    <div class="meta">Started 2026-08-14 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups Broad-PDP &rarr; 4,587 sessions (16.4%)</div>
-    <p class="note">Biggest denominator on the board — 725k visitors, 17.7k orders — and every headline moves the variant&#x27;s way (RPV +2.3%, CVR +1.1%, AOV +1.2%, ATC +1.1%). All four still straddle zero (RPV p2bb 0.857). Intelligems estimates +$44,454/mo, the largest on the board; that is an extrapolation, not a verdict. Worth knowing: this test has no page targeting and assigns all visitors, while the edit only appears on PDPs — only 52% of assigned visitors ever view a product page, so any real PDP effect is diluted by roughly half in these numbers.</p>
-    <div class="t-scroll">
-    <table>
-      <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
-      <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control<span class="tag">control</span></th><td class="num">362,510</td><td class="num">8,801</td><td><span class="val">2.43%</span></td><td><span class="val">$1.50</span></td><td><span class="val">$61.94</span></td><td><span class="val">7.36%</span></td><td><span class="val">67.22%</span></td><td><span class="val">49.87%</span></td></tr><tr><th scope="row">Ingredients</th><td class="num">362,780</td><td class="num">8,902</td><td><span class="val">2.45%</span><span class="lift up">+1.1%</span></td><td><span class="val">$1.54</span><span class="lift up">+2.3%</span></td><td><span class="val">$62.69</span><span class="lift up">+1.2%</span></td><td><span class="val">7.45%</span><span class="lift up">+1.1%</span></td><td><span class="val">67.28%</span><span class="lift down">+0.1%</span></td><td><span class="val">49.76%</span><span class="lift down">-0.2%</span></td></tr></tbody>
-    </table>
-    </div>
-    <a class="ig-link" href="https://app.intelligems.io/experiment/ae005c92-1055-48ce-8818-d2c588d3e0d0" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
-  </div>
-</details>
-<details class="test" data-readiness="wait">
-  <summary>
-    <span class="chev" aria-hidden="true"></span>
-    <span class="row-main">
       <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/1b5f03e3-fb44-47e5-bb86-b9ca2eaea605"
         target="_blank" rel="noopener"
-        title="Open in Intelligems (new tab)">[NEW-LP] 30% off funnel</a> <span class="lead-note">&mdash; leading of 2 variants: Clsoed 30%</span></span>
+        title="Open in Intelligems (new tab)">[NEW-LP] 30% off funnel</a> <span class="lead-note">&mdash; leading of 2 variants: Closed 52%</span></span>
       <span class="stats">
-        <span class="stat"><b>11</b><small>days live</small></span>
-        <span class="stat"><b>20</b><small>variant orders</small></span>
+        <span class="stat"><b>19</b><small>days live</small></span>
+        <span class="stat"><b>63</b><small>variant orders</small></span>
         <span class="stat"><b class="flat">&mdash;</b><small>RPV</small></span>
         <span class="stat"><b>0.0%</b><small>traffic</small></span>
       </span>
@@ -284,45 +226,16 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-19 &middot; Split 0/50/50 &middot; Type content/url &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict error &middot; Group NEW-LP not in the traffic sheet &mdash; counted as 0%</div>
-    <p class="note">NO CONTROL AND NO LIFTS. The control group is allocated 0% of traffic, so Intelligems returns verdict &#x27;error&#x27; (&quot;control variation &#x27;abc39a80...&#x27; is not present in the series&quot;) and no uplift figures exist for either arm — the values below are raw levels only, not comparisons, and the control row is all em dashes because the API returned no data for it. The two closed-funnel arms can be read against each other but not against business-as-usual. Also thin: 34 orders total across both arms in 11 days. Gated to utm_campaign containing Sale_test, redirecting the TDK-BTS, KDE-BTS and TDK hidden-hunger LPs. Tagged [NEW-LP], which is not a group in the traffic sheet, so its traffic share counts as 0%.</p>
+    <div class="meta">Started 2026-08-19 &middot; Split 0/50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict error &middot; Group NEW-LP not in the traffic sheet &mdash; counted as 0%</div>
+    <p class="note">Broken as configured — no verdict and no lifts are computable. Intelligems returns verdict &#x27;error&#x27;: &quot;control variation &#x27;abc39a80-acba-464d-a9b2-2c1891740ddc&#x27; is not present in the series&quot;. The control is allocated 0% of traffic, so it collected no visitors and Intelligems returned no metrics row for it; the two challengers therefore have nothing to be compared against and every lift below is an em dash. The absolute values are real but they rest on 63 and 54 orders. Fix the split to give the control traffic, or accept that this test cannot produce a read. Group tag [NEW-LP] does not exist in the traffic sheet, so its share counts as 0%.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">&mdash;</td><td class="num">&mdash;</td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td></tr><tr><th scope="row">Closed 52%</th><td class="num">821</td><td class="num">14</td><td><span class="val">1.71%</span><span class="lift flat">&mdash;</span></td><td><span class="val">$0.70</span><span class="lift flat">&mdash;</span></td><td><span class="val">$41.21</span><span class="lift flat">&mdash;</span></td><td><span class="val">6.21%</span><span class="lift flat">&mdash;</span></td><td><span class="val">72.55%</span><span class="lift flat">&mdash;</span></td><td><span class="val">35.90%</span><span class="lift flat">&mdash;</span></td></tr><tr><th scope="row">Clsoed 30%</th><td class="num">851</td><td class="num">20</td><td><span class="val">2.35%</span><span class="lift flat">&mdash;</span></td><td><span class="val">$1.27</span><span class="lift flat">&mdash;</span></td><td><span class="val">$53.88</span><span class="lift flat">&mdash;</span></td><td><span class="val">6.11%</span><span class="lift flat">&mdash;</span></td><td><span class="val">63.46%</span><span class="lift flat">&mdash;</span></td><td><span class="val">45.24%</span><span class="lift flat">&mdash;</span></td></tr></tbody>
+      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">&mdash;</td><td class="num">&mdash;</td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td><td><span class="val">&mdash;</span></td></tr><tr><th scope="row">Closed 52%</th><td class="num">2,959</td><td class="num">63</td><td><span class="val">2.13%</span><span class="lift flat">&mdash;</span></td><td><span class="val">$1.06</span><span class="lift flat">&mdash;</span></td><td><span class="val">$49.80</span><span class="lift flat">&mdash;</span></td><td><span class="val">6.93%</span><span class="lift flat">&mdash;</span></td><td><span class="val">69.27%</span><span class="lift flat">&mdash;</span></td><td><span class="val">38.65%</span><span class="lift flat">&mdash;</span></td></tr><tr><th scope="row">Clsoed 30%</th><td class="num">3,020</td><td class="num">54</td><td><span class="val">1.79%</span><span class="lift flat">&mdash;</span></td><td><span class="val">$0.99</span><span class="lift flat">&mdash;</span></td><td><span class="val">$55.17</span><span class="lift flat">&mdash;</span></td><td><span class="val">6.19%</span><span class="lift flat">&mdash;</span></td><td><span class="val">71.66%</span><span class="lift flat">&mdash;</span></td><td><span class="val">33.76%</span><span class="lift flat">&mdash;</span></td></tr></tbody>
     </table>
     </div>
     <a class="ig-link" href="https://app.intelligems.io/experiment/1b5f03e3-fb44-47e5-bb86-b9ca2eaea605" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
-  </div>
-</details>
-<details class="test" data-readiness="wait">
-  <summary>
-    <span class="chev" aria-hidden="true"></span>
-    <span class="row-main">
-      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/9f56a95c-5e73-4a5f-ae6a-771d7a92175c"
-        target="_blank" rel="noopener"
-        title="Open in Intelligems (new tab)">[CART] UI Tweaks V2</a></span>
-      <span class="stats">
-        <span class="stat"><b>10</b><small>days live</small></span>
-        <span class="stat"><b>6,752</b><small>variant orders</small></span>
-        <span class="stat"><b class="up">+1.1%</b><small>RPV</small></span>
-        <span class="stat"><b>100.0%</b><small>sitewide</small></span>
-      </span>
-      <span class="pill wait">Needs time</span>
-    </span>
-  </summary>
-  <div class="body">
-    <div class="meta">Started 2026-08-20 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups CART &rarr; 28,000 sessions (100.0%) &middot; Sitewide &mdash; on every session, so excluded from the coverage roll-up</div>
-    <p class="note">Cart drawer with no page targeting, so it runs on every session — the traffic figure reads sitewide and is excluded from the landing-page coverage roll-up. Dead flat on all four headlines at 541k visitors and 13.5k orders (RPV +1.1%, CVR +0.2%, AOV +1.0%, ATC +1.1%), and cart abandonment is up 0.4% with checkout completion down 0.3%. At this sample a real effect of any size would already be visible, so &#x27;no difference&#x27; is the more likely answer than &#x27;too early&#x27;. The +$26,237/mo Intelligems estimate rests on an RPV lift whose interval straddles zero.</p>
-    <div class="t-scroll">
-    <table>
-      <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
-      <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">270,692</td><td class="num">6,760</td><td><span class="val">2.50%</span></td><td><span class="val">$1.56</span></td><td><span class="val">$62.41</span></td><td><span class="val">7.61%</span></td><td><span class="val">67.39%</span></td><td><span class="val">50.58%</span></td></tr><tr><th scope="row">New</th><td class="num">269,905</td><td class="num">6,752</td><td><span class="val">2.50%</span><span class="lift up">+0.2%</span></td><td><span class="val">$1.58</span><span class="lift up">+1.1%</span></td><td><span class="val">$63.00</span><span class="lift up">+1.0%</span></td><td><span class="val">7.69%</span><span class="lift up">+1.1%</span></td><td><span class="val">67.67%</span><span class="lift down">+0.4%</span></td><td><span class="val">50.43%</span><span class="lift down">-0.3%</span></td></tr></tbody>
-    </table>
-    </div>
-    <a class="ig-link" href="https://app.intelligems.io/experiment/9f56a95c-5e73-4a5f-ae6a-771d7a92175c" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
   </div>
 </details>
 <details class="test" data-readiness="wait">
@@ -333,22 +246,22 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         target="_blank" rel="noopener"
         title="Open in Intelligems (new tab)">[TDK-BTS] Growth Science Tabs</a></span>
       <span class="stats">
-        <span class="stat"><b>9</b><small>days live</small></span>
-        <span class="stat"><b>430</b><small>variant orders</small></span>
-        <span class="stat"><b class="down">-1.5%</b><small>RPV</small></span>
-        <span class="stat"><b>27.4%</b><small>traffic</small></span>
+        <span class="stat"><b>17</b><small>days live</small></span>
+        <span class="stat"><b>824</b><small>variant orders</small></span>
+        <span class="stat"><b class="up">+2.4%</b><small>RPV</small></span>
+        <span class="stat"><b>13.1%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-21 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups TDK-BTS &rarr; 7,685 sessions (27.4%)</div>
-    <p class="note">Sign conflict driving the hero: RPV is down 1.5% because CVR (+5.7%) is pulling against AOV (-6.7%) — more buyers spending less each — and ATC is flat (-0.9%). Nothing is significant at 832 orders after 9 days. Intelligems estimates -$2,125/mo.</p>
+    <div class="meta">Started 2026-08-21 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups TDK-BTS &rarr; 4,677 sessions (13.1%)</div>
+    <p class="note">RPV +2.4% is a net of opposing moves: CVR +8.0% against AOV -5.2%, so the gain is more buyers spending less, not a better basket. The funnel agrees with the CVR side — cart abandonment -3.1%, checkout completion +6.0%. Nothing significant at 17 days; still not_ready on ~800 orders per arm.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">22,027</td><td class="num">402</td><td><span class="val">1.83%</span></td><td><span class="val">$1.08</span></td><td><span class="val">$59.28</span></td><td><span class="val">6.51%</span></td><td><span class="val">72.04%</span></td><td><span class="val">44.21%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">22,297</td><td class="num">430</td><td><span class="val">1.93%</span><span class="lift up">+5.7%</span></td><td><span class="val">$1.07</span><span class="lift down">-1.5%</span></td><td><span class="val">$55.28</span><span class="lift down">-6.7%</span></td><td><span class="val">6.45%</span><span class="lift down">-0.9%</span></td><td><span class="val">70.24%</span><span class="lift up">-2.5%</span></td><td><span class="val">46.72%</span><span class="lift up">+5.7%</span></td></tr></tbody>
+      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">52,605</td><td class="num">754</td><td><span class="val">1.43%</span></td><td><span class="val">$0.85</span></td><td><span class="val">$59.26</span></td><td><span class="val">5.40%</span></td><td><span class="val">73.48%</span></td><td><span class="val">43.43%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">53,218</td><td class="num">824</td><td><span class="val">1.55%</span><span class="lift up">+8.0%</span></td><td><span class="val">$0.87</span><span class="lift up">+2.4%</span></td><td><span class="val">$56.16</span><span class="lift down">-5.2%</span></td><td><span class="val">5.35%</span><span class="lift down">-0.9%</span></td><td><span class="val">71.16%</span><span class="lift up">-3.1%</span></td><td><span class="val">46.05%</span><span class="lift up">+6.0%</span></td></tr></tbody>
     </table>
     </div>
     <a class="ig-link" href="https://app.intelligems.io/experiment/753148ce-bf7e-40e1-bed8-461181a132de" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
@@ -362,22 +275,22 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         target="_blank" rel="noopener"
         title="Open in Intelligems (new tab)">[ALL] Lower OTP Discount</a></span>
       <span class="stats">
-        <span class="stat"><b>5</b><small>days live</small></span>
-        <span class="stat"><b>118</b><small>variant orders</small></span>
-        <span class="stat"><b class="up">+6.4%</b><small>RPV</small></span>
-        <span class="stat"><b>32.3%</b><small>traffic</small></span>
+        <span class="stat"><b>13</b><small>days live</small></span>
+        <span class="stat"><b>371</b><small>variant orders</small></span>
+        <span class="stat"><b class="down">-5.6%</b><small>RPV</small></span>
+        <span class="stat"><b>23.5%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-25 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups KDE-BTS &rarr; 9,057 sessions (32.3%)</div>
-    <p class="note">Five days in, 232 orders — too early to read. The name says [ALL] but the test&#x27;s page targeting is a single URL, /pages/kde-behind-the-science-lp (verified in the config this session), so it is scored against the KDE-BTS group rather than the whole site; the [ALL] tag is a misnomer worth fixing in Intelligems. Direction is consistent (RPV +6.4%, CVR +3.1%, AOV +3.2%, ATC +7.1%) but the funnel moved the wrong way underneath it — cart abandonment +1.5%, checkout completion -2.7%. Intelligems estimates +$4,634/mo off five days of data.</p>
+    <div class="meta">Started 2026-08-25 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups KDE-BTS &rarr; 8,383 sessions (23.5%)</div>
+    <p class="note">Bracket tag [ALL] is a misnomer: this test runs on KDE-BTS only, so groups are overridden to KDE-BTS rather than read from the name. Losing on the hero metric — RPV -5.6%, driven by CVR (-6.6%), not basket value (AOV +1.1%); cart abandonment +3.3% and checkout completion -5.4% point the same way. Intelligems estimates -$5,886/mo. Verdict is still not_ready, so this is a consistent negative signal, not yet a call.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">7,737</td><td class="num">114</td><td><span class="val">1.47%</span></td><td><span class="val">$0.89</span></td><td><span class="val">$60.08</span></td><td><span class="val">5.30%</span></td><td><span class="val">72.20%</span></td><td><span class="val">48.72%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">7,768</td><td class="num">118</td><td><span class="val">1.52%</span><span class="lift up">+3.1%</span></td><td><span class="val">$0.94</span><span class="lift up">+6.4%</span></td><td><span class="val">$62.03</span><span class="lift up">+3.2%</span></td><td><span class="val">5.68%</span><span class="lift up">+7.1%</span></td><td><span class="val">73.24%</span><span class="lift down">+1.5%</span></td><td><span class="val">47.39%</span><span class="lift down">-2.7%</span></td></tr></tbody>
+      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">24,866</td><td class="num">393</td><td><span class="val">1.58%</span></td><td><span class="val">$0.96</span></td><td><span class="val">$60.90</span></td><td><span class="val">5.32%</span></td><td><span class="val">70.27%</span></td><td><span class="val">49.06%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">25,140</td><td class="num">371</td><td><span class="val">1.48%</span><span class="lift down">-6.6%</span></td><td><span class="val">$0.91</span><span class="lift down">-5.6%</span></td><td><span class="val">$61.58</span><span class="lift up">+1.1%</span></td><td><span class="val">5.38%</span><span class="lift up">+1.2%</span></td><td><span class="val">72.58%</span><span class="lift down">+3.3%</span></td><td><span class="val">46.43%</span><span class="lift down">-5.4%</span></td></tr></tbody>
     </table>
     </div>
     <a class="ig-link" href="https://app.intelligems.io/experiment/983e058b-7357-4222-80ce-a5df694fd840" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
@@ -391,43 +304,101 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
         target="_blank" rel="noopener"
         title="Open in Intelligems (new tab)">[Broad-PDP] Unified PDP price/day</a></span>
       <span class="stats">
-        <span class="stat"><b>5</b><small>days live</small></span>
-        <span class="stat"><b>345</b><small>variant orders</small></span>
-        <span class="stat"><b class="up">+10.7%</b><small>RPV</small></span>
-        <span class="stat"><b>16.4%</b><small>traffic</small></span>
+        <span class="stat"><b>13</b><small>days live</small></span>
+        <span class="stat"><b>1,219</b><small>variant orders</small></span>
+        <span class="stat"><b class="up">+3.2%</b><small>RPV</small></span>
+        <span class="stat"><b>9.4%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-08-25 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; View sitewide_orders &middot; Verdict not_ready &middot; Groups Broad-PDP &rarr; 4,587 sessions (16.4%)</div>
-    <p class="note">Five days in, 673 orders. Everything points the same way for once — RPV +10.7%, CVR +8.1%, AOV +2.4%, ATC +4.3%, cart abandonment -1.3%, checkout completion +2.5% — but none of it is significant yet (RPV p2bb 0.836) and the +$23,676/mo estimate is extrapolated from those five days. This is the shape of an early lift that often regresses; give it the full two weeks.</p>
+    <div class="meta">Started 2026-08-25 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups Broad-PDP &rarr; 3,372 sessions (9.4%)</div>
+    <p class="note">The cleanest board on the board: RPV +3.2% with every component pointing the same way (CVR +2.5%, AOV +0.8%, ATC +0.8%, cart abandonment -0.9%, checkout completion +1.2%) and traffic balanced 20,393/20,483. Nothing is significant yet — no interval excludes zero — so it stays not_ready. Intelligems estimates +$11,133/mo, the largest positive estimate of any live test.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
       <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
-      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">5,354</td><td class="num">328</td><td><span class="val">6.13%</span></td><td><span class="val">$4.08</span></td><td><span class="val">$66.66</span></td><td><span class="val">18.75%</span></td><td><span class="val">67.53%</span></td><td><span class="val">52.08%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">5,208</td><td class="num">345</td><td><span class="val">6.62%</span><span class="lift up">+8.1%</span></td><td><span class="val">$4.52</span><span class="lift up">+10.7%</span></td><td><span class="val">$68.27</span><span class="lift up">+2.4%</span></td><td><span class="val">19.57%</span><span class="lift up">+4.3%</span></td><td><span class="val">66.63%</span><span class="lift up">-1.3%</span></td><td><span class="val">53.38%</span><span class="lift up">+2.5%</span></td></tr></tbody>
+      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">20,483</td><td class="num">1,195</td><td><span class="val">5.83%</span></td><td><span class="val">$3.88</span></td><td><span class="val">$66.47</span></td><td><span class="val">17.23%</span></td><td><span class="val">66.36%</span></td><td><span class="val">51.95%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">20,393</td><td class="num">1,219</td><td><span class="val">5.98%</span><span class="lift up">+2.5%</span></td><td><span class="val">$4.00</span><span class="lift up">+3.2%</span></td><td><span class="val">$66.98</span><span class="lift up">+0.8%</span></td><td><span class="val">17.37%</span><span class="lift up">+0.8%</span></td><td><span class="val">65.78%</span><span class="lift up">-0.9%</span></td><td><span class="val">52.56%</span><span class="lift up">+1.2%</span></td></tr></tbody>
     </table>
     </div>
     <a class="ig-link" href="https://app.intelligems.io/experiment/6984a5b8-2708-4c77-a070-0adc6dad7a36" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
+  </div>
+</details>
+<details class="test" data-readiness="wait">
+  <summary>
+    <span class="chev" aria-hidden="true"></span>
+    <span class="row-main">
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/bdf77686-776d-40fc-9301-f7dc5be2d285"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">[Broad-KDE-TDK-PDP] Gorgias Chat Widget</a></span>
+      <span class="stats">
+        <span class="stat"><b>6</b><small>days live</small></span>
+        <span class="stat"><b>514</b><small>variant orders</small></span>
+        <span class="stat"><b class="up">+1.8%</b><small>RPV</small></span>
+        <span class="stat"><b>0.0%</b><small>traffic</small></span>
+      </span>
+      <span class="pill wait">Needs time</span>
+    </span>
+  </summary>
+  <div class="body">
+    <div class="meta">Started 2026-09-01 &middot; Split 50/50 &middot; Type content/onsiteEdits &middot; Hero metric RPV &middot; Verdict not_ready &middot; Group Broad-KDE-TDK-PDP not in the traffic sheet &mdash; counted as 0%</div>
+    <p class="note">RPV +1.8% is the net of two opposing moves — CVR +6.5% against AOV -4.4% — so the chat widget looks like it converts more visitors into smaller orders. Nothing here is significant at 6 days. Group tag [Broad-KDE-TDK-PDP] does not exist in the traffic sheet, so its traffic share counts as 0%; the tag needs renaming to the sheet&#x27;s group names.</p>
+    <div class="t-scroll">
+    <table>
+      <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
+      <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
+      <tbody><tr><th scope="row">No-Chat<span class="tag">control</span></th><td class="num">17,145</td><td class="num">476</td><td><span class="val">2.78%</span></td><td><span class="val">$1.76</span></td><td><span class="val">$63.44</span></td><td><span class="val">9.01%</span></td><td><span class="val">69.17%</span></td><td><span class="val">48.87%</span></td></tr><tr><th scope="row">Gorias-Chat</th><td class="num">17,383</td><td class="num">514</td><td><span class="val">2.96%</span><span class="lift up">+6.5%</span></td><td><span class="val">$1.79</span><span class="lift up">+1.8%</span></td><td><span class="val">$60.65</span><span class="lift down">-4.4%</span></td><td><span class="val">9.31%</span><span class="lift up">+3.4%</span></td><td><span class="val">68.31%</span><span class="lift up">-1.2%</span></td><td><span class="val">49.52%</span><span class="lift up">+1.3%</span></td></tr></tbody>
+    </table>
+    </div>
+    <a class="ig-link" href="https://app.intelligems.io/experiment/bdf77686-776d-40fc-9301-f7dc5be2d285" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
+  </div>
+</details>
+<details class="test" data-readiness="wait">
+  <summary>
+    <span class="chev" aria-hidden="true"></span>
+    <span class="row-main">
+      <span class="t-name"><a class="t-link" href="https://app.intelligems.io/experiment/ef57b98b-48cf-4334-8f24-25abcd763225"
+        target="_blank" rel="noopener"
+        title="Open in Intelligems (new tab)">KDE BTS -&gt; Bundle Builder</a></span>
+      <span class="stats">
+        <span class="stat"><b>3</b><small>days live</small></span>
+        <span class="stat"><b>161</b><small>variant orders</small></span>
+        <span class="stat"><b class="up">+4.8%</b><small>RPV</small></span>
+        <span class="stat"><b>&mdash;</b><small>traffic</small></span>
+      </span>
+      <span class="pill wait">Needs time</span>
+    </span>
+  </summary>
+  <div class="body">
+    <div class="meta">Started 2026-09-04 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready &middot; No group tag — traffic share unknown</div>
+    <p class="note">Three days live on 161/177 orders per arm — none of these lifts are interpretable yet. The hero RPV (+4.8%) is not the story: checkout abandonment is +36.8% with an interval well clear of zero (+22.5% to +54.0%), i.e. visitors reach checkout and bail. AOV +15.9% comes with units/order +54.1% and discount per order +80.9%, so the bundle builder is selling bigger, more heavily discounted carts to fewer buyers (CVR -9.6%). Product-page view rate -27.4% is expected — the variant redirects away from the PDP. The test name carries no bracket tag, so no traffic share is claimed and none is shown; it should be tagged.</p>
+    <div class="t-scroll">
+    <table>
+      <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
+      <th scope="col">Orders</th><th>CVR</th><th>RPV</th><th>AOV</th><th>ATC</th><th>Cart aband.</th><th>Checkout compl.</th></tr></thead>
+      <tbody><tr><th scope="row">Control Group<span class="tag">control</span></th><td class="num">8,910</td><td class="num">177</td><td><span class="val">1.99%</span></td><td><span class="val">$1.20</span></td><td><span class="val">$60.34</span></td><td><span class="val">6.95%</span></td><td><span class="val">71.41%</span></td><td><span class="val">48.63%</span></td></tr><tr><th scope="row">New Group 1</th><td class="num">8,965</td><td class="num">161</td><td><span class="val">1.80%</span><span class="lift down">-9.6%</span></td><td><span class="val">$1.26</span><span class="lift up">+4.8%</span></td><td><span class="val">$69.93</span><span class="lift up">+15.9%</span></td><td><span class="val">7.14%</span><span class="lift up">+2.8%</span></td><td><span class="val">74.84%</span><span class="lift down">+4.8%</span></td><td><span class="val">29.70%</span><span class="lift down">-38.9%</span></td></tr></tbody>
+    </table>
+    </div>
+    <a class="ig-link" href="https://app.intelligems.io/experiment/ef57b98b-48cf-4334-8f24-25abcd763225" target="_blank" rel="noopener">Open in Intelligems &rarr;</a>
   </div>
 </details>
   
 <section class="opps">
   <h2>Top traffic opportunities</h2>
   <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
-    23.0% of paid LP sessions going untested. Source: Meta ads by landing-page group, sheet pulled 2026-08-31 (sheet states no reporting window).</p>
+    53.2% of paid LP sessions going untested. Source: Meta ads by landing-page group, published sheet as fetched 2026-09-08 (the sheet does not state its reporting window).</p>
   <div class="t-scroll">
   <table>
     <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
     <th scope="col">Share</th></tr></thead>
-    <tbody><tr><th scope="row">Other</th><td class="num">4,862</td><td class="num">17.4%</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">1,445</td><td class="num">5.2%</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">131</td><td class="num">0.5%</td></tr></tbody>
+    <tbody><tr><th scope="row">Other</th><td class="num">17,786</td><td class="num">49.8%</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">896</td><td class="num">2.5%</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">229</td><td class="num">0.6%</td></tr><tr><th scope="row">KCM-Sale</th><td class="num">84</td><td class="num">0.2%</td></tr></tbody>
   </table>
   </div>
 </section>
   <footer>
-    <div class="stamp"><b>Last pulled 2026-08-31T14:52Z</b> &mdash; Intelligems test metrics.
-      Traffic groups: Meta ads by landing-page group, sheet pulled 2026-08-31 (sheet states no reporting window).</div>
+    <div class="stamp"><b>Last pulled 2026-09-08T09:49-05:00</b> &mdash; Intelligems test metrics.
+      Traffic groups: Meta ads by landing-page group, published sheet as fetched 2026-09-08 (the sheet does not state its reporting window).</div>
     Figures are live and will move while tests are running. Lift shown vs. control.
     Cart abandonment is added-to-cart visitors who never began checkout; higher is worse, so
     its lift is coloured by direction rather than by sign. Checkout completion is the
