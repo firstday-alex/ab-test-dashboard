@@ -33,6 +33,10 @@ METRICS = [
     ("add_to_cart_rate", "ATC", "pct", True),
     ("abandoned_cart_rate", "Cart aband.", "pct", False),
     ("checkout_completion_rate", "Checkout compl.", "pct", True),
+    # Pulled separately with filters.customerType="new", which narrows orders
+    # (visitors are unchanged), so this is pct_subscription_orders among
+    # new-customer orders only.
+    ("new_customer_pct_subscription_orders", "New-cust. sub %", "pct", True),
 ]
 
 # Metrics computed here rather than pulled, as the exact complement of a metric
@@ -49,6 +53,7 @@ METRIC_LABELS = {
     "abandoned_cart_rate": "Cart abandonment",
     "abandoned_checkout_rate": "Checkout abandonment",
     "checkout_completion_rate": "Checkout completion",
+    "new_customer_pct_subscription_orders": "New-customer subscription %",
     "gross_profit_per_visitor": "Profit/visitor",
     "n_orders": "Orders",
     "net_revenue": "Net revenue",
@@ -580,9 +585,9 @@ body.lk-open{overflow:hidden}
 @media (max-width:560px){
   .lk-table{min-width:0}
   body{padding:18px 12px 40px}
-  /* 8 columns now; below this the table scrolls inside .t-scroll rather than
+  /* 9 columns now; below this the table scrolls inside .t-scroll rather than
      letting the numbers crush together. Raise with any new column. */
-  table{font-size:12.5px;min-width:700px} th,td{padding:8px 7px}
+  table{font-size:12.5px;min-width:790px} th,td{padding:8px 7px}
   .opps table{min-width:0}
   .pill{margin-left:0}
 }
@@ -836,6 +841,8 @@ def build(data):
     its lift is coloured by direction rather than by sign. Checkout completion is the
     complement of Intelligems' abandoned-checkout rate (1 &minus; rate), and its lift is
     computed from the two completion values, not carried over from the abandonment metric.
+    New-cust. sub % is the share of new-customer orders that include a subscription,
+    from a second Intelligems pull filtered to new customers.
   </footer>
 </div>
 {lookup}

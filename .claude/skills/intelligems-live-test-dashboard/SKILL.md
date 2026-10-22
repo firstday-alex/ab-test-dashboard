@@ -49,12 +49,21 @@ experiments only — do not fold in `search_experiences` results unless the user
 Paginate with `page` if the result set is capped. If nothing is live, still build the dashboard: the
 script renders an explicit empty state, which is more useful than a chat message.
 
-### 3. Per test, make two calls
+### 3. Per test, make three calls
 
 ```
-get_experience(id=<uuid>)
+get_experience_metrics_config(experienceId=<uuid>)   # or get_experience(id=<uuid>), see below
 analyze_experience(experienceId=<uuid>, view="overview", testResult=true)
+analyze_experience(experienceId=<uuid>, view="overview", filters={"customerType": "new"})
 ```
+
+The third call feeds the **New-cust. sub %** column. Read `pct_subscription_orders` (`value` and
+`uplift.value`) from it and store it on each variation as `new_customer_pct_subscription_orders`.
+`customerType` filters orders, not visitors: visitor counts come back unchanged and order counts
+drop. So this is the share of new-customer orders that include a subscription, not the
+subscription share of all orders. Leave out `testResult` on this call, because a filtered verdict
+isn't valid. On a very new test where every order so far is from a new customer, this call returns
+exactly what the unfiltered one does, which is correct.
 
 **Parameter quirk:** most tools take the UUID as `id`, but `analyze_experience` and
 `generate_intelligems_graph` take it as `experienceId`. If a call fails validation, retry with the
@@ -81,6 +90,7 @@ Metric keys to read:
 | ATC               | `add_to_cart_rate`          |
 | Cart aband.       | `abandoned_cart_rate`       |
 | Checkout compl.   | *derived* — see below       |
+| New-cust. sub %   | `pct_subscription_orders`, from the `customerType: "new"` pull |
 | Visitors          | `n_visitors`                |
 | Orders            | `n_orders`                  |
 

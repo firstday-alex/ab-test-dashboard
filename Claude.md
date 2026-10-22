@@ -35,9 +35,11 @@ The `intelligems-live-test-dashboard` skill owns this workflow. In short:
    `organization` on every call.
 2. `search_experiments(status="started")` → the live A/B tests. Experiments only; `search_experiences`
    returns evergreen programs, which this dashboard deliberately excludes.
-3. Per test, two calls:
+3. Per test, three calls:
    - `analyze_experience(experienceId=…, view="overview", testResult=true)` → every metric below per
      variation, plus visitors, orders, variation names, `isControl`, and split percentages.
+   - `analyze_experience(experienceId=…, view="overview", filters={"customerType": "new"})` → only
+     for `pct_subscription_orders`, stored as `new_customer_pct_subscription_orders`.
    - `get_experience(id=…)` → only for the primary key metric.
 4. Write the pulled JSON, then
    `python3 .claude/skills/intelligems-live-test-dashboard/scripts/build_dashboard.py <pulled.json> -o index.html`.
@@ -54,6 +56,7 @@ Pull everything before rendering so the whole dashboard reflects one moment in t
 | ATC             | `add_to_cart_rate`                    |
 | Cart aband.     | `abandoned_cart_rate`                 |
 | Checkout compl. | `abandoned_checkout_rate` — see below  |
+| New-cust. sub % | `pct_subscription_orders` from the `customerType: "new"` pull |
 | Visitors        | `n_visitors`                          |
 | Orders          | `n_orders`                            |
 
