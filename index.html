@@ -100,7 +100,40 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 .opps table{font-size:13.5px}
 .opps tbody th{font-weight:600}
 
+/* Landing-page groups menu: hamburger in the header, panel slides in from the right. */
+.h-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.burger{flex:0 0 auto;width:38px;height:38px;border:1px solid var(--line);border-radius:8px;
+  background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.burger:hover{border-color:var(--ink-3)}
+.burger span,.burger span::before,.burger span::after{display:block;width:16px;height:2px;
+  background:var(--ink-2);border-radius:1px;position:relative}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0}
+.burger span::before{top:-5px} .burger span::after{top:5px}
+.lk-backdrop{position:fixed;inset:0;background:rgba(17,22,29,.28);z-index:20}
+.lk{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);z-index:21;overflow-y:auto;
+  background:var(--bg);border-left:1px solid var(--line);box-shadow:-4px 0 18px rgba(17,22,29,.12);
+  padding:18px 16px 24px}
+.lk[hidden],.lk-backdrop[hidden]{display:none}
+.lk-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lk h2{margin:0;font-size:16px;letter-spacing:-.01em}
+.lk h3{margin:18px 0 4px;font-size:13.5px}
+.lk-x{border:none;background:none;font-size:24px;line-height:1;color:var(--ink-2);cursor:pointer;
+  padding:4px 8px;border-radius:6px}
+.lk-x:hover{background:var(--bg-2);color:var(--ink)}
+.lk-sub{margin:6px 0 10px;font-size:12.5px;color:var(--ink-2)}
+.lk-table{font-size:13px} .lk-table th,.lk-table td{padding:8px 6px}
+.lk-table tbody th{white-space:nowrap}
+.lk-table thead th:last-child,.lk-tests{text-align:left}
+.lk-tests{font-size:12px;color:var(--ink-2);overflow-wrap:anywhere}
+.lk-miss{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2)}
+.lk-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.lk-btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;
+  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600}
+.lk-btn:hover{background:#2a3440}
+body.lk-open{overflow:hidden}
+
 @media (max-width:560px){
+  .lk-table{min-width:0}
   body{padding:18px 12px 40px}
   /* 8 columns now; below this the table scrolls inside .t-scroll rather than
      letting the numbers crush together. Raise with any new column. */
@@ -112,7 +145,11 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 </head><body>
 <div class="wrap">
   <header>
-    <h1>Live A/B Tests</h1>
+    <div class="h-top">
+      <h1>Live A/B Tests</h1>
+      <button class="burger" type="button" data-lk="open" aria-controls="lk-panel"
+        aria-expanded="false" aria-label="Landing-page groups menu"><span></span></button>
+    </div>
     <div class="sub">6 tests running &middot; First Day Life Inc.
       &middot; data pulled 2026-10-22T10:24-05:00</div>
     <div class="counts"><span class="count"><b>1</b> time to make a call</span><span class="count"><b>1</b> could make a decision</span><span class="count"><b>4</b> needs time</span><span class="count cov"><b>80.7%</b> of paid LP sessions under test <span class="cov-note">(3 groups, deduplicated)</span></span></div>
@@ -300,7 +337,7 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 <section class="opps">
   <h2>Top traffic opportunities</h2>
   <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
-    19.3% of paid LP sessions going untested. Source: Meta ads by landing-page group, published sheet as fetched 2026-10-22 (the sheet does not state its reporting window)..</p>
+    19.3% of paid LP sessions going untested. Source: Meta ads by landing-page group, published sheet as fetched 2026-10-22 (the sheet does not state its reporting window).</p>
   <div class="t-scroll">
   <table>
     <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
@@ -311,7 +348,7 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 </section>
   <footer>
     <div class="stamp"><b>Last pulled 2026-10-22T10:24-05:00</b> &mdash; Intelligems test metrics.
-      Traffic groups: Meta ads by landing-page group, published sheet as fetched 2026-10-22 (the sheet does not state its reporting window)..</div>
+      Traffic groups: Meta ads by landing-page group, published sheet as fetched 2026-10-22 (the sheet does not state its reporting window).</div>
     Figures are live and will move while tests are running. Lift shown vs. control.
     Cart abandonment is added-to-cart visitors who never began checkout; higher is worse, so
     its lift is coloured by direction rather than by sign. Checkout completion is the
@@ -319,6 +356,26 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
     computed from the two completion values, not carried over from the abandonment metric.
   </footer>
 </div>
+
+<div class="lk-backdrop" data-lk="close" hidden></div>
+<aside class="lk" id="lk-panel" aria-label="Landing-page groups" hidden>
+  <div class="lk-head">
+    <h2>Landing-page groups</h2>
+    <button class="lk-x" type="button" data-lk="close" aria-label="Close menu">&times;</button>
+  </div>
+  <p class="lk-sub">Read from the Google Sheet as of this pull. Source: Meta ads by landing-page group, published sheet as fetched 2026-10-22 (the sheet does not state its reporting window).
+    Shares are of paid LP sessions.</p>
+  <div class="t-scroll">
+  <table class="lk-table">
+    <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
+    <th scope="col">Share</th><th scope="col">Live tests</th></tr></thead>
+    <tbody><tr><th scope="row">KDE-BTS</th><td class="num">8,560</td><td class="num">33.4%</td><td class="lk-tests">[KDE-BTS] -&gt; Bundle Builder V3</td></tr><tr><th scope="row">Broad-PDP</th><td class="num">8,256</td><td class="num">32.2%</td><td class="lk-tests">[Broad-PDP] 90 Option<br>[Broad-PDP] Sticky ATC Test</td></tr><tr><th scope="row">TDK-BTS</th><td class="num">3,903</td><td class="num">15.2%</td><td class="lk-tests">[TDK-BTS] -&gt; 90 option</td></tr><tr><th scope="row">Other</th><td class="num">3,134</td><td class="num">12.2%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">TRMV-BTS</th><td class="num">755</td><td class="num">2.9%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">722</td><td class="num">2.8%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">211</td><td class="num">0.8%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-Sale</th><td class="num">114</td><td class="num">0.4%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-PDP</th><td class="num">7</td><td class="num">0.0%</td><td class="lk-tests">&mdash;</td></tr></tbody>
+  </table>
+  </div>
+  <h3>Test tags not in the sheet</h3><p class="lk-sub">Counted as 0% traffic until the sheet has a group with the same name.</p><ul class="lk-miss"><li><b>HP</b> &mdash; [HP] Shop For Your Family&#x27;s Health</li><li><b>/pages/sale</b> &mdash; [/pages/sale] Two products per row</li></ul>
+  <div class="lk-foot"><a class="lk-btn" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vR-UNFL2QOO463D9C72xV0GZX5BD_WYTPPzXInUkZ2cuiuS0n6--G-rKKz7IZ2eZCsWwETiVQ9PJTFd/pubhtml" target="_blank" rel="noopener">Open Google Sheet &#8599;</a><p class="lk-sub">This opens the published, view-only copy. Edits are made in the source sheet.</p>
+    <p class="lk-sub">Changes in the sheet show up at the next dashboard refresh.</p></div>
+</aside>
 <script>
 /* A click on the name opens Intelligems in a new tab; stopping propagation
    keeps the <summary> from also toggling the row open/closed. */
@@ -331,5 +388,25 @@ document.querySelectorAll('[data-act]').forEach(function(b){
     document.querySelectorAll('details.test').forEach(function(d){ d.open = open; });
   });
 });
+/* Landing-page groups menu. Closes on the X, the backdrop, or Escape, and hands
+   focus back to the hamburger so keyboard users land where they started. */
+(function(){
+  var panel = document.getElementById('lk-panel');
+  var back = document.querySelector('.lk-backdrop');
+  var burger = document.querySelector('.burger');
+  if (!panel || !burger) return;
+  function set(open){
+    panel.hidden = !open; back.hidden = !open;
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.classList.toggle('lk-open', open);
+    if (open) panel.querySelector('.lk-x').focus(); else burger.focus();
+  }
+  document.querySelectorAll('[data-lk]').forEach(function(el){
+    el.addEventListener('click', function(){ set(el.dataset.lk === 'open'); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && !panel.hidden) set(false);
+  });
+})();
 </script>
 </body></html>

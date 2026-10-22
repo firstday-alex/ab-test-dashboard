@@ -279,6 +279,14 @@ A test combining a sitewide group with a surface group (`[Cart][TDK-BTS]`) reads
 sitewide subsumes the rest rather than summing past the denominator — while `TDK-BTS` still counts
 toward coverage on its own.
 
+**Landing-page groups menu.** The hamburger at the top right opens a read-only panel listing every
+group in `traffic.groups` with its sessions, its share, and the live tests on it, plus any test tags
+that matched no group. It renders from the same JSON, so nothing extra needs pulling. Its button opens
+the Google Sheet in a new tab. Edits happen there and reach the dashboard on the next refresh, so the
+panel deliberately has no in-page editor. The publish link (`SHEET_VIEW_URL`) is view-only, and the
+`/d/<id>/edit` URL can't be derived from it. Set `traffic.sheet_edit_url`, or `SHEET_EDIT_URL` in
+the script, and the button becomes "Edit in Google Sheets".
+
 ### 5d. Deep links
 
 Each test's name in the collapsed row is a link that opens that test in Intelligems in a new tab

@@ -79,6 +79,17 @@ READINESS = {
 # path, so a wrong template cannot be detected by fetching it.
 IG_URL_TEMPLATE = "https://app.intelligems.io/experiment/{id}"
 
+# The Google Sheet behind `traffic.groups`, linked from the landing-page groups
+# menu. The published link is view-only; Google gives no way to derive the
+# editable /d/<id>/edit URL from a /d/e/2PACX-... publish ID. Set
+# `traffic.sheet_edit_url` in the input JSON (or SHEET_EDIT_URL here) to make the
+# button an edit link -- until then it is labelled as view-only, not as "Edit".
+SHEET_VIEW_URL = (
+    "https://docs.google.com/spreadsheets/d/e/"
+    "2PACX-1vR-UNFL2QOO463D9C72xV0GZX5BD_WYTPPzXInUkZ2cuiuS0n6--G-rKKz7IZ2eZCsWwETiVQ9PJTFd/pubhtml"
+)
+SHEET_EDIT_URL = None
+
 
 def ig_url(test, template=None):
     return (template or IG_URL_TEMPLATE).format(id=test["id"])
@@ -534,7 +545,40 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 .opps table{font-size:13.5px}
 .opps tbody th{font-weight:600}
 
+/* Landing-page groups menu: hamburger in the header, panel slides in from the right. */
+.h-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.burger{flex:0 0 auto;width:38px;height:38px;border:1px solid var(--line);border-radius:8px;
+  background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.burger:hover{border-color:var(--ink-3)}
+.burger span,.burger span::before,.burger span::after{display:block;width:16px;height:2px;
+  background:var(--ink-2);border-radius:1px;position:relative}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0}
+.burger span::before{top:-5px} .burger span::after{top:5px}
+.lk-backdrop{position:fixed;inset:0;background:rgba(17,22,29,.28);z-index:20}
+.lk{position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);z-index:21;overflow-y:auto;
+  background:var(--bg);border-left:1px solid var(--line);box-shadow:-4px 0 18px rgba(17,22,29,.12);
+  padding:18px 16px 24px}
+.lk[hidden],.lk-backdrop[hidden]{display:none}
+.lk-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lk h2{margin:0;font-size:16px;letter-spacing:-.01em}
+.lk h3{margin:18px 0 4px;font-size:13.5px}
+.lk-x{border:none;background:none;font-size:24px;line-height:1;color:var(--ink-2);cursor:pointer;
+  padding:4px 8px;border-radius:6px}
+.lk-x:hover{background:var(--bg-2);color:var(--ink)}
+.lk-sub{margin:6px 0 10px;font-size:12.5px;color:var(--ink-2)}
+.lk-table{font-size:13px} .lk-table th,.lk-table td{padding:8px 6px}
+.lk-table tbody th{white-space:nowrap}
+.lk-table thead th:last-child,.lk-tests{text-align:left}
+.lk-tests{font-size:12px;color:var(--ink-2);overflow-wrap:anywhere}
+.lk-miss{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2)}
+.lk-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.lk-btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;
+  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600}
+.lk-btn:hover{background:#2a3440}
+body.lk-open{overflow:hidden}
+
 @media (max-width:560px){
+  .lk-table{min-width:0}
   body{padding:18px 12px 40px}
   /* 8 columns now; below this the table scrolls inside .t-scroll rather than
      letting the numbers crush together. Raise with any new column. */
@@ -556,6 +600,26 @@ document.querySelectorAll('[data-act]').forEach(function(b){
     document.querySelectorAll('details.test').forEach(function(d){ d.open = open; });
   });
 });
+/* Landing-page groups menu. Closes on the X, the backdrop, or Escape, and hands
+   focus back to the hamburger so keyboard users land where they started. */
+(function(){
+  var panel = document.getElementById('lk-panel');
+  var back = document.querySelector('.lk-backdrop');
+  var burger = document.querySelector('.burger');
+  if (!panel || !burger) return;
+  function set(open){
+    panel.hidden = !open; back.hidden = !open;
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.classList.toggle('lk-open', open);
+    if (open) panel.querySelector('.lk-x').focus(); else burger.focus();
+  }
+  document.querySelectorAll('[data-lk]').forEach(function(el){
+    el.addEventListener('click', function(){ set(el.dataset.lk === 'open'); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && !panel.hidden) set(false);
+  });
+})();
 """
 
 
@@ -625,6 +689,78 @@ def render_opportunities(idle, ttotal, label, source):
 </section>"""
 
 
+def render_lookup(tests, tidx, ttotal, label, source, traffic_meta):
+    """
+    Slide-out menu listing the landing-page groups exactly as the sheet has them.
+
+    Read-only by design: the sheet is the source of truth, so changes are made
+    there and picked up on the next refresh. The menu links out to it rather
+    than offering an in-page editor whose edits would have nowhere to persist.
+    """
+    used_by, unmatched = {}, []
+    for t in tests:
+        _, matched, missing, _ = resolve_traffic(t, tidx, ttotal)
+        for m in matched:
+            used_by.setdefault(norm_group(m), []).append(t["name"])
+        for g in missing:
+            unmatched.append((g, t["name"]))
+
+    rows = "".join(
+        f'<tr><th scope="row">{esc(disp)}</th>'
+        f'<td class="num">{sess:,.0f}</td>'
+        f'<td class="num">{(sess / ttotal * 100) if ttotal else 0:.1f}%</td>'
+        f'<td class="lk-tests">{"<br>".join(esc(n) for n in used_by.get(k, [])) or "&mdash;"}</td></tr>'
+        for k, (disp, sess) in sorted(tidx.items(), key=lambda kv: -kv[1][1])
+    )
+    if not rows:
+        rows = '<tr><td colspan="4">No traffic groups in this pull.</td></tr>'
+
+    miss = ""
+    if unmatched:
+        items = "".join(
+            f"<li><b>{esc(g)}</b> &mdash; {esc(n)}</li>" for g, n in unmatched
+        )
+        miss = (
+            '<h3>Test tags not in the sheet</h3>'
+            '<p class="lk-sub">Counted as 0% traffic until the sheet has a group'
+            f' with the same name.</p><ul class="lk-miss">{items}</ul>'
+        )
+
+    edit_url = traffic_meta.get("sheet_edit_url") or SHEET_EDIT_URL
+    view_url = traffic_meta.get("sheet_view_url") or SHEET_VIEW_URL
+    if edit_url:
+        btn = (f'<a class="lk-btn" href="{esc(edit_url)}" target="_blank"'
+               ' rel="noopener">Edit in Google Sheets &#8599;</a>')
+    elif view_url:
+        btn = (f'<a class="lk-btn" href="{esc(view_url)}" target="_blank"'
+               ' rel="noopener">Open Google Sheet &#8599;</a>'
+               '<p class="lk-sub">This opens the published, view-only copy.'
+               ' Edits are made in the source sheet.</p>')
+    else:
+        btn = ""
+
+    return f"""
+<div class="lk-backdrop" data-lk="close" hidden></div>
+<aside class="lk" id="lk-panel" aria-label="Landing-page groups" hidden>
+  <div class="lk-head">
+    <h2>Landing-page groups</h2>
+    <button class="lk-x" type="button" data-lk="close" aria-label="Close menu">&times;</button>
+  </div>
+  <p class="lk-sub">Read from the Google Sheet as of this pull. Source: {esc(source)}.
+    Shares are of {esc(label)}.</p>
+  <div class="t-scroll">
+  <table class="lk-table">
+    <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
+    <th scope="col">Share</th><th scope="col">Live tests</th></tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+  </div>
+  {miss}
+  <div class="lk-foot">{btn}
+    <p class="lk-sub">Changes in the sheet show up at the next dashboard refresh.</p></div>
+</aside>"""
+
+
 def build(data):
     tests = data.get("tests", [])
     for i, t in enumerate(tests):
@@ -649,10 +785,12 @@ def build(data):
     traffic_meta = data.get("traffic") or {}
     tidx, ttotal = traffic_index(data)
     tlabel = traffic_meta.get("denominator_label") or "sessions"
-    tsource = traffic_meta.get("source") or "unspecified"
+    # Every template appends its own full stop; a source that ends in one would double it.
+    tsource = (traffic_meta.get("source") or "unspecified").rstrip(". ")
     tested, under_test, idle = coverage(tests, tidx, ttotal)
     counts += render_coverage(tested, ttotal, len(under_test), tlabel)
     opps = render_opportunities(idle, ttotal, tlabel, tsource)
+    lookup = render_lookup(tests, tidx, ttotal, tlabel, tsource, traffic_meta)
 
     generated = data.get("generated_at") or datetime.now().astimezone().isoformat(
         timespec="minutes"
@@ -675,7 +813,11 @@ def build(data):
 </head><body>
 <div class="wrap">
   <header>
-    <h1>Live A/B Tests</h1>
+    <div class="h-top">
+      <h1>Live A/B Tests</h1>
+      <button class="burger" type="button" data-lk="open" aria-controls="lk-panel"
+        aria-expanded="false" aria-label="Landing-page groups menu"><span></span></button>
+    </div>
     <div class="sub">{len(tests)} test{'' if len(tests)==1 else 's'} running{org_txt}
       &middot; data pulled {esc(generated)}</div>
     <div class="counts">{counts}</div>
@@ -696,6 +838,7 @@ def build(data):
     computed from the two completion values, not carried over from the abandonment metric.
   </footer>
 </div>
+{lookup}
 <script>{JS}</script>
 </body></html>"""
 
