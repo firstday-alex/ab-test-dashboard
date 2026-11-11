@@ -549,6 +549,19 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 .opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2)}
 .opps table{font-size:13.5px}
 .opps tbody th{font-weight:600}
+/* Group drill-down: the group name toggles its own sub-rows. */
+.opp-tog{all:unset;cursor:pointer;display:inline-flex;align-items:baseline;gap:6px;
+  flex-wrap:wrap;font-weight:600;color:var(--ink)}
+.opp-tog:focus-visible{outline:2px solid var(--ink-3);outline-offset:2px;border-radius:4px}
+.opp-car{font-size:11px;color:var(--ink-2);transition:transform .15s}
+.opp-tog[aria-expanded="true"] .opp-car{transform:rotate(180deg)}
+.opp-hint{font-size:11.5px;font-weight:500;color:var(--ink-3)}
+.opp-tog:hover .opp-hint{color:var(--ink-2);text-decoration:underline}
+.opp-sub th,.opp-sub td{background:var(--bg-2)}
+.opp-sub th{font-weight:400;padding-left:22px;color:var(--ink-2);overflow-wrap:anywhere}
+.opp-sub td.num{color:var(--ink-2)}
+.opp-rest th{font-style:italic}
+.opp-basis td{text-align:left;font-size:12px;color:var(--ink-3);padding-left:22px}
 
 /* Landing-page groups menu: hamburger in the header, panel slides in from the right. */
 .h-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -603,6 +616,16 @@ document.querySelectorAll('[data-act]').forEach(function(b){
   b.addEventListener('click', function(){
     var open = b.dataset.act === 'open';
     document.querySelectorAll('details.test').forEach(function(d){ d.open = open; });
+  });
+});
+/* Opportunity drill-down: a group's toggle shows or hides its sub-rows. */
+document.querySelectorAll('.opp-tog').forEach(function(b){
+  b.addEventListener('click', function(){
+    var open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.querySelectorAll('tr[data-of="' + b.dataset.opp + '"]').forEach(function(r){
+      r.hidden = !open;
+    });
   });
 });
 /* Landing-page groups menu. Closes on the X, the backdrop, or Escape, and hands
@@ -667,16 +690,64 @@ def render_coverage(tested, ttotal, n_groups, label):
     )
 
 
-def render_opportunities(idle, ttotal, label, source):
+BREAKDOWN_TOP = 12
+
+
+def render_breakdown(gid, name, spec, ttotal):
+    """
+    Hidden sub-rows under one opportunity group, opened by the group's toggle.
+
+    Shows the largest BREAKDOWN_TOP items and folds the rest into one line, so
+    the sub-rows always add back up to the parent's sessions.
+    """
+    items = [r for r in (spec.get("rows") or []) if r.get("sessions")]
+    items.sort(key=lambda r: -float(r["sessions"]))
+    head, tail = items[:BREAKDOWN_TOP], items[BREAKDOWN_TOP:]
+    if tail:
+        head = head + [{
+            "label": f"{len(tail)} more",
+            "sessions": sum(float(r["sessions"]) for r in tail),
+            "rest": True,
+        }]
+    basis = spec.get("basis") or "ad name"
+
+    def share(v):
+        return f"{(v / ttotal * 100) if ttotal else 0:.1f}%"
+
+    rows = "".join(
+        f'<tr class="opp-sub{" opp-rest" if r.get("rest") else ""}" data-of="{gid}" hidden>'
+        f'<th scope="row">{esc(r["label"])}</th>'
+        f'<td class="num">{float(r["sessions"]):,.0f}</td>'
+        f'<td class="num">{share(float(r["sessions"]))}</td></tr>'
+        for r in head
+    )
+    note = (f'<tr class="opp-sub opp-basis" data-of="{gid}" hidden><td colspan="3">'
+            f'{esc(name)} broken down by {esc(basis)}. Ad names say where they point, '
+            'which isn\'t always the page the session landed on.</td></tr>')
+    return note + rows
+
+
+def render_opportunities(idle, ttotal, label, source, breakdowns=None):
     """Groups carrying traffic with no live test on them, largest first."""
     if not idle:
         return ""
-    rows = "".join(
-        f"<tr><th scope=\"row\">{esc(name)}</th>"
-        f'<td class="num">{sessions:,.0f}</td>'
-        f'<td class="num">{(sessions / ttotal * 100) if ttotal else 0:.1f}%</td></tr>'
-        for name, sessions in idle
-    )
+    bidx = {norm_group(k): v for k, v in (breakdowns or {}).items()}
+    out = []
+    for i, (name, sessions) in enumerate(idle):
+        spec = bidx.get(norm_group(name))
+        share = f"{(sessions / ttotal * 100) if ttotal else 0:.1f}%"
+        if spec and spec.get("rows"):
+            gid = f"opp{i}"
+            head = (f'<button class="opp-tog" type="button" aria-expanded="false"'
+                    f' data-opp="{gid}">{esc(name)} <span class="opp-car" aria-hidden="true">'
+                    f'&#9662;</span><span class="opp-hint">break down</span></button>')
+            sub = render_breakdown(gid, name, spec, ttotal)
+        else:
+            head, sub = esc(name), ""
+        out.append(f'<tr><th scope="row">{head}</th>'
+                   f'<td class="num">{sessions:,.0f}</td>'
+                   f'<td class="num">{share}</td></tr>{sub}')
+    rows = "".join(out)
     total_idle = sum(s for _, s in idle)
     share = f"{total_idle / ttotal * 100:.1f}%" if ttotal else "&mdash;"
     return f"""
@@ -794,7 +865,8 @@ def build(data):
     tsource = (traffic_meta.get("source") or "unspecified").rstrip(". ")
     tested, under_test, idle = coverage(tests, tidx, ttotal)
     counts += render_coverage(tested, ttotal, len(under_test), tlabel)
-    opps = render_opportunities(idle, ttotal, tlabel, tsource)
+    opps = render_opportunities(idle, ttotal, tlabel, tsource,
+                                traffic_meta.get("breakdowns"))
     lookup = render_lookup(tests, tidx, ttotal, tlabel, tsource, traffic_meta)
 
     generated = data.get("generated_at") or datetime.now().astimezone().isoformat(

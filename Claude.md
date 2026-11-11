@@ -20,6 +20,7 @@ index.html                       generated dashboard, served by Pages — do not
 .claude/skills/intelligems-live-test-dashboard/
     SKILL.md                     the refresh workflow
     scripts/build_dashboard.py   renders index.html from a pulled JSON file
+    scripts/traffic_breakdown.py breaks a traffic-sheet group (e.g. Other) down by ad URL code
 ```
 
 The build script lives under the skill directory — there is no top-level `scripts/`.

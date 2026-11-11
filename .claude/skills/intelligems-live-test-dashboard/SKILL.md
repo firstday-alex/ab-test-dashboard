@@ -239,7 +239,7 @@ Sessions per group come from a published Google Sheet CSV (Meta ads bucketed by 
 curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-UNFL2QOO463D9C72xV0GZX5BD_WYTPPzXInUkZ2cuiuS0n6--G-rKKz7IZ2eZCsWwETiVQ9PJTFd/pub?output=csv" -o groups.csv
 ```
 
-Columns: `Ad Name, Landing Page Path Groups, Sessions, ATC Rate, Bounce Rate, Avg Engaged Time (mins), CVR, Orders`.
+Columns (parse by header; Sessions has been column 2 in practice): `Ad Name, Landing Page Path Groups, Sessions, ATC Rate, Bounce Rate, Avg Engaged Time (mins), CVR, Orders`.
 Sum `Sessions` per group and add a top-level `traffic` block:
 
 ```json
@@ -296,6 +296,20 @@ the Google Sheet in a new tab. Edits happen there and reach the dashboard on the
 panel deliberately has no in-page editor. The publish link (`SHEET_VIEW_URL`) is view-only, and the
 `/d/<id>/edit` URL can't be derived from it. Set `traffic.sheet_edit_url`, or `SHEET_EDIT_URL` in
 the script, and the button becomes "Edit in Google Sheets".
+
+**Breaking down "Other".** "Other" is usually the biggest untested row, and on its own it tells you
+nothing about what to test. Any group with an entry in `traffic.breakdowns` gets a "break down"
+toggle in Top traffic opportunities that shows sub-rows: the top 12, plus one "N more" line so the
+sub-rows add back up to the parent. The sheet has no landing-path column, so the breakdown key comes
+from the ad name: the `_URL-<page>` code, with fallbacks for Trybe creator ads, `SKU-` codes, and
+uncoded or blank names. Generate it from the same CSV, don't build it by hand:
+
+```bash
+python3 .claude/skills/intelligems-live-test-dashboard/scripts/traffic_breakdown.py groups.csv --group Other
+```
+
+Paste the output in as `traffic.breakdowns`. It's what the ad says it links to, not a measured landing
+path, and the dashboard says so in the sub-row note. Shares are still of `total_sessions`.
 
 ### 5d. Deep links
 
