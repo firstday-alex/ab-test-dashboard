@@ -96,7 +96,8 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 .opps{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px 16px 6px;margin-top:20px}
 .opps h2{margin:0 0 4px;font-size:15px;letter-spacing:-.01em}
-.opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2)}
+.opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2);overflow-wrap:anywhere}
+.opps-sub code{font-size:12px}
 .opps table{font-size:13.5px}
 .opps tbody th{font-weight:600}
 /* Group drill-down: the group name toggles its own sub-rows. */
@@ -165,7 +166,7 @@ body.lk-open{overflow:hidden}
     </div>
     <div class="sub">6 tests running &middot; First Day Life Inc.
       &middot; data pulled 2026-11-11T00:15-06:00</div>
-    <div class="counts"><span class="count"><b>6</b> needs time</span><span class="count cov"><b>65.7%</b> of paid LP sessions under test <span class="cov-note">(3 groups, deduplicated)</span></span></div>
+    <div class="counts"><span class="count"><b>6</b> needs time</span><span class="count cov"><b>73.4%</b> of paid LP sessions under test <span class="cov-note">(3 groups, deduplicated)</span></span></div>
     <div class="tools">
       <button data-act="open" type="button">Expand all</button>
       <button data-act="close" type="button">Collapse all</button>
@@ -299,14 +300,14 @@ body.lk-open{overflow:hidden}
         <span class="stat"><b>1</b><small>days live</small></span>
         <span class="stat"><b>93</b><small>variant orders</small></span>
         <span class="stat"><b class="down">-7.0%</b><small>RPV</small></span>
-        <span class="stat"><b>19.0%</b><small>traffic</small></span>
+        <span class="stat"><b>26.6%</b><small>traffic</small></span>
       </span>
       <span class="pill wait">Needs time</span>
     </span>
   </summary>
   <div class="body">
-    <div class="meta">Started 2026-11-09 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups KDE-BTS &rarr; 4,764 sessions (19.0%)</div>
-    <p class="note">About 100 orders per arm, so too early. Worth watching: New BYOB sends 36% more visitors into checkout (p2bc 1.00), but checkout abandonment is up 19% (p2bc 0.0004). The extra checkouts aren&#x27;t completing, and CVR is -8.4%. That&#x27;s a checkout-stage drop, not a page-engagement one.</p>
+    <div class="meta">Started 2026-11-09 &middot; Split 50/50 &middot; Type content/url &middot; Hero metric RPV &middot; Verdict not_ready &middot; Groups KDE-BTS &rarr; 6,690 sessions (26.6%)</div>
+    <p class="note">About 100 orders per arm, so too early. Worth watching: New BYOB sends 36% more visitors into checkout (p2bc 1.00), but checkout abandonment is up 19% (p2bc 0.0004). The extra checkouts aren&#x27;t completing, and CVR is -8.4%. That&#x27;s a checkout-stage drop, not a page-engagement one. Traffic share includes the sessions that landed on the New BYOB redirect page (/pages/family-bundle-builder-gridwall-builder), which the sheet files under Other.</p>
     <div class="t-scroll">
     <table>
       <thead><tr><th scope="col">Variation</th><th scope="col">Visitors</th>
@@ -350,18 +351,18 @@ body.lk-open{overflow:hidden}
 <section class="opps">
   <h2>Top traffic opportunities</h2>
   <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
-    34.3% of paid LP sessions going untested. Source: Meta ads by landing-page group, published sheet as fetched 2026-11-11 (1000 rows; the sheet does not state its reporting window).</p>
+    26.6% of paid LP sessions going untested. Source: Meta ads by landing-page group, published sheet (groups and full_lps tabs, 1000 and 1000 rows) as fetched 2026-11-11; the sheet does not state its reporting window.</p><p class="opps-sub">Counted in the test&rsquo;s group, not where the sheet files it, because it&rsquo;s a live test&rsquo;s redirect page: <code>/pages/family-bundle-builder-gridwall-builder</code> (1,926 sessions) from Other to KDE-BTS.</p>
   <div class="t-scroll">
   <table>
     <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
     <th scope="col">Share</th></tr></thead>
-    <tbody><tr><th scope="row"><button class="opp-tog" type="button" aria-expanded="false" data-opp="opp0">Other <span class="opp-car" aria-hidden="true">&#9662;</span><span class="opp-hint">break down</span></button></th><td class="num">6,776</td><td class="num">27.0%</td></tr><tr class="opp-sub opp-basis" data-of="opp0" hidden><td colspan="3">Other broken down by landing page named in the ad (_URL- code). Ad names say where they point, which isn't always the page the session landed on.</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">Trybe creator ads (no URL code)</th><td class="num">2,160</td><td class="num">8.6%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">kde-behind-the-science-lp</th><td class="num">1,281</td><td class="num">5.1%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">fam-bundle-builder-lp</th><td class="num">533</td><td class="num">2.1%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">broad-sale</th><td class="num">314</td><td class="num">1.2%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">quiz-lp</th><td class="num">310</td><td class="num">1.2%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">amazon-5-pediatric-warning-signs</th><td class="num">231</td><td class="num">0.9%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">Uncoded ad name</th><td class="num">181</td><td class="num">0.7%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">tpf-sport-pdp</th><td class="num">170</td><td class="num">0.7%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">4-vitamins-i-wish-i-never-bought</th><td class="num">165</td><td class="num">0.7%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">apf-beauty-pdp</th><td class="num">149</td><td class="num">0.6%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">tgs-skin-sales-lp</th><td class="num">135</td><td class="num">0.5%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">brain-bts-kids-teens</th><td class="num">125</td><td class="num">0.5%</td></tr><tr class="opp-sub opp-rest" data-of="opp0" hidden><th scope="row">28 more</th><td class="num">1,022</td><td class="num">4.1%</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">880</td><td class="num">3.5%</td></tr><tr><th scope="row">TRMV-BTS</th><td class="num">778</td><td class="num">3.1%</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">109</td><td class="num">0.4%</td></tr><tr><th scope="row">KCM-Sale</th><td class="num">73</td><td class="num">0.3%</td></tr></tbody>
+    <tbody><tr><th scope="row"><button class="opp-tog" type="button" aria-expanded="false" data-opp="opp0">Other <span class="opp-car" aria-hidden="true">&#9662;</span><span class="opp-hint">break down</span></button></th><td class="num">4,850</td><td class="num">19.3%</td></tr><tr class="opp-sub opp-basis" data-of="opp0" hidden><td colspan="3">Other broken down by actual landing page (sheet&#x27;s full_lps tab).</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/tdk-sales-behavior-hiddenhunger-spanish-lp</th><td class="num">1,581</td><td class="num">6.3%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/bundle-quiz</th><td class="num">520</td><td class="num">2.1%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/sale</th><td class="num">332</td><td class="num">1.3%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/apf-behind-the-science-beauty-lp</th><td class="num">314</td><td class="num">1.2%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/is-your-family-nutrient-deficient</th><td class="num">309</td><td class="num">1.2%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/brain-bts-kids-teens</th><td class="num">257</td><td class="num">1.0%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/5-pediatric-warning-signs-your-toddler-may-have-a-nutrient-gap</th><td class="num">233</td><td class="num">0.9%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/4-Vitamins-I-Wish-I-Never-Bought</th><td class="num">197</td><td class="num">0.8%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/tpf-behind-the-science-sports-lp</th><td class="num">168</td><td class="num">0.7%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/tgs-skin-sales-lp</th><td class="num">134</td><td class="num">0.5%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/tdk-sales-behavior-hiddenhunger-lp</th><td class="num">108</td><td class="num">0.4%</td></tr><tr class="opp-sub" data-of="opp0" hidden><th scope="row">/pages/multivitamin-adhd-kids-teens</th><td class="num">105</td><td class="num">0.4%</td></tr><tr class="opp-sub opp-rest" data-of="opp0" hidden><th scope="row">15 more</th><td class="num">393</td><td class="num">1.6%</td></tr><tr class="opp-sub opp-rest" data-of="opp0" hidden><th scope="row">Not itemised (the two sheet tabs disagree slightly)</th><td class="num">199</td><td class="num">0.8%</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">880</td><td class="num">3.5%</td></tr><tr><th scope="row">TRMV-BTS</th><td class="num">778</td><td class="num">3.1%</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">109</td><td class="num">0.4%</td></tr><tr><th scope="row">KCM-Sale</th><td class="num">73</td><td class="num">0.3%</td></tr></tbody>
   </table>
   </div>
 </section>
   <footer>
     <div class="stamp"><b>Last pulled 2026-11-11T00:15-06:00</b> &mdash; Intelligems test metrics.
-      Traffic groups: Meta ads by landing-page group, published sheet as fetched 2026-11-11 (1000 rows; the sheet does not state its reporting window).</div>
+      Traffic groups: Meta ads by landing-page group, published sheet (groups and full_lps tabs, 1000 and 1000 rows) as fetched 2026-11-11; the sheet does not state its reporting window.</div>
     Figures are live and will move while tests are running. Lift shown vs. control.
     Cart abandonment is added-to-cart visitors who never began checkout; higher is worse, so
     its lift is coloured by direction rather than by sign. Checkout completion is the
@@ -378,13 +379,13 @@ body.lk-open{overflow:hidden}
     <h2>Landing-page groups</h2>
     <button class="lk-x" type="button" data-lk="close" aria-label="Close menu">&times;</button>
   </div>
-  <p class="lk-sub">Read from the Google Sheet as of this pull. Source: Meta ads by landing-page group, published sheet as fetched 2026-11-11 (1000 rows; the sheet does not state its reporting window).
+  <p class="lk-sub">Read from the Google Sheet as of this pull. Source: Meta ads by landing-page group, published sheet (groups and full_lps tabs, 1000 and 1000 rows) as fetched 2026-11-11; the sheet does not state its reporting window.
     Shares are of paid LP sessions.</p>
   <div class="t-scroll">
   <table class="lk-table">
     <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
     <th scope="col">Share</th><th scope="col">Live tests</th></tr></thead>
-    <tbody><tr><th scope="row">TDK-BTS</th><td class="num">7,327</td><td class="num">29.2%</td><td class="lk-tests">[TDK-BTS] 90 option v2</td></tr><tr><th scope="row">Other</th><td class="num">6,776</td><td class="num">27.0%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KDE-BTS</th><td class="num">4,764</td><td class="num">19.0%</td><td class="lk-tests">[KDE-BTS] vs Single Page PLP FBB </td></tr><tr><th scope="row">Broad-PDP</th><td class="num">4,425</td><td class="num">17.6%</td><td class="lk-tests">[Broad-PDP] Sticky ATC Test<br>[Broad-PDP] 90 Option V2</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">880</td><td class="num">3.5%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">TRMV-BTS</th><td class="num">778</td><td class="num">3.1%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">109</td><td class="num">0.4%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-Sale</th><td class="num">73</td><td class="num">0.3%</td><td class="lk-tests">&mdash;</td></tr></tbody>
+    <tbody><tr><th scope="row">TDK-BTS</th><td class="num">7,327</td><td class="num">29.2%</td><td class="lk-tests">[TDK-BTS] 90 option v2</td></tr><tr><th scope="row">KDE-BTS</th><td class="num">6,690</td><td class="num">26.6%</td><td class="lk-tests">[KDE-BTS] vs Single Page PLP FBB </td></tr><tr><th scope="row">Other</th><td class="num">4,850</td><td class="num">19.3%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">Broad-PDP</th><td class="num">4,425</td><td class="num">17.6%</td><td class="lk-tests">[Broad-PDP] Sticky ATC Test<br>[Broad-PDP] 90 Option V2</td></tr><tr><th scope="row">KDE-PDP</th><td class="num">880</td><td class="num">3.5%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">TRMV-BTS</th><td class="num">778</td><td class="num">3.1%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-Melatonin</th><td class="num">109</td><td class="num">0.4%</td><td class="lk-tests">&mdash;</td></tr><tr><th scope="row">KCM-Sale</th><td class="num">73</td><td class="num">0.3%</td><td class="lk-tests">&mdash;</td></tr></tbody>
   </table>
   </div>
   <h3>Test tags not in the sheet</h3><p class="lk-sub">Counted as 0% traffic until the sheet has a group with the same name.</p><ul class="lk-miss"><li><b>Homepage</b> &mdash; [Homepage] BF hero: whole family + mystery gift $75</li><li><b>/pages/sale</b> &mdash; [/pages/sale] vs BFCM Bundle Builder</li></ul>

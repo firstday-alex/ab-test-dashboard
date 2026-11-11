@@ -546,7 +546,8 @@ footer{margin-top:24px;color:var(--ink-3);font-size:12px}
 .opps{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);
   padding:16px 16px 6px;margin-top:20px}
 .opps h2{margin:0 0 4px;font-size:15px;letter-spacing:-.01em}
-.opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2)}
+.opps-sub{margin:0 0 10px;font-size:12.5px;color:var(--ink-2);overflow-wrap:anywhere}
+.opps-sub code{font-size:12px}
 .opps table{font-size:13.5px}
 .opps tbody th{font-weight:600}
 /* Group drill-down: the group name toggles its own sub-rows. */
@@ -700,8 +701,10 @@ def render_breakdown(gid, name, spec, ttotal):
     Shows the largest BREAKDOWN_TOP items and folds the rest into one line, so
     the sub-rows always add back up to the parent's sessions.
     """
-    items = [r for r in (spec.get("rows") or []) if r.get("sessions")]
-    items.sort(key=lambda r: -float(r["sessions"]))
+    rows_in = [r for r in (spec.get("rows") or []) if r.get("sessions")]
+    # Remainder lines (e.g. "not itemised") stay last, whatever their size.
+    items = sorted((r for r in rows_in if not r.get("rest")), key=lambda r: -float(r["sessions"]))
+    fixed = [r for r in rows_in if r.get("rest")]
     head, tail = items[:BREAKDOWN_TOP], items[BREAKDOWN_TOP:]
     if tail:
         head = head + [{
@@ -709,7 +712,8 @@ def render_breakdown(gid, name, spec, ttotal):
             "sessions": sum(float(r["sessions"]) for r in tail),
             "rest": True,
         }]
-    basis = spec.get("basis") or "ad name"
+    head += fixed
+    basis = spec.get("basis") or "landing page"
 
     def share(v):
         return f"{(v / ttotal * 100) if ttotal else 0:.1f}%"
@@ -722,12 +726,31 @@ def render_breakdown(gid, name, spec, ttotal):
         for r in head
     )
     note = (f'<tr class="opp-sub opp-basis" data-of="{gid}" hidden><td colspan="3">'
-            f'{esc(name)} broken down by {esc(basis)}. Ad names say where they point, '
-            'which isn\'t always the page the session landed on.</td></tr>')
+            f'{esc(name)} broken down by {esc(basis)}.</td></tr>')
     return note + rows
 
 
-def render_opportunities(idle, ttotal, label, source, breakdowns=None):
+def render_reassigned(moved):
+    """
+    One line naming each landing page moved between groups, and why.
+
+    The sheet files a session under the page it landed on after any redirect.
+    A live test's challenger page then drops out of the test's group, so its
+    sessions get counted toward that group instead. The line makes the move
+    visible, because it changes group totals away from the sheet's own.
+    """
+    if not moved:
+        return ""
+    parts = "; ".join(
+        f'<code>{esc(m["path"])}</code> ({float(m["sessions"]):,.0f} sessions) '
+        f'from {esc(m["from"])} to {esc(m["to"])}'
+        for m in moved
+    )
+    return (f'<p class="opps-sub">Counted in the test&rsquo;s group, not where the sheet '
+            f'files it, because it&rsquo;s a live test&rsquo;s redirect page: {parts}.</p>')
+
+
+def render_opportunities(idle, ttotal, label, source, breakdowns=None, reassigned=None):
     """Groups carrying traffic with no live test on them, largest first."""
     if not idle:
         return ""
@@ -754,7 +777,7 @@ def render_opportunities(idle, ttotal, label, source, breakdowns=None):
 <section class="opps">
   <h2>Top traffic opportunities</h2>
   <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
-    {share} of {esc(label)} going untested. Source: {esc(source)}.</p>
+    {share} of {esc(label)} going untested. Source: {esc(source)}.</p>{render_reassigned(reassigned)}
   <div class="t-scroll">
   <table>
     <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
@@ -866,7 +889,8 @@ def build(data):
     tested, under_test, idle = coverage(tests, tidx, ttotal)
     counts += render_coverage(tested, ttotal, len(under_test), tlabel)
     opps = render_opportunities(idle, ttotal, tlabel, tsource,
-                                traffic_meta.get("breakdowns"))
+                                traffic_meta.get("breakdowns"),
+                                traffic_meta.get("reassigned"))
     lookup = render_lookup(tests, tidx, ttotal, tlabel, tsource, traffic_meta)
 
     generated = data.get("generated_at") or datetime.now().astimezone().isoformat(

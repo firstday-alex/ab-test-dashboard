@@ -297,19 +297,35 @@ panel deliberately has no in-page editor. The publish link (`SHEET_VIEW_URL`) is
 `/d/<id>/edit` URL can't be derived from it. Set `traffic.sheet_edit_url`, or `SHEET_EDIT_URL` in
 the script, and the button becomes "Edit in Google Sheets".
 
-**Breaking down "Other".** "Other" is usually the biggest untested row, and on its own it tells you
-nothing about what to test. Any group with an entry in `traffic.breakdowns` gets a "break down"
-toggle in Top traffic opportunities that shows sub-rows: the top 12, plus one "N more" line so the
-sub-rows add back up to the parent. The sheet has no landing-path column, so the breakdown key comes
-from the ad name: the `_URL-<page>` code, with fallbacks for Trybe creator ads, `SKU-` codes, and
-uncoded or blank names. Generate it from the same CSV, don't build it by hand:
+**Breaking down "Other", and redirect pages.** The published sheet has two tabs: `groups`
+(gid 0, sessions by ad and group) and `full_lps` (gid 2032858919, sessions by ad and *actual
+landing page*). Fetch both:
 
 ```bash
-python3 .claude/skills/intelligems-live-test-dashboard/scripts/traffic_breakdown.py groups.csv --group Other
+BASE="https://docs.google.com/spreadsheets/d/e/2PACX-1vR-UNFL2QOO463D9C72xV0GZX5BD_WYTPPzXInUkZ2cuiuS0n6--G-rKKz7IZ2eZCsWwETiVQ9PJTFd/pub"
+curl -sL "$BASE?output=csv" -o groups.csv
+curl -sL "$BASE?gid=2032858919&single=true&output=csv" -o full_lps.csv
+python3 .claude/skills/intelligems-live-test-dashboard/scripts/traffic_breakdown.py groups.csv full_lps.csv \
+  --group Other --reassign <redirect destination path>=<test's group> ...
 ```
 
-Paste the output in as `traffic.breakdowns`. It's what the ad says it links to, not a measured landing
-path, and the dashboard says so in the sub-row note. Shares are still of `total_sessions`.
+The script outputs `groups`, `breakdowns` and `reassigned`, and those replace the hand-summed groups
+in the `traffic` block. The breakdown is by real landing page. The page-to-group mapping comes from
+ads that have exactly one row in each tab, and that mapping matched the sheet's group totals to
+within about 1% on 2026-11-11. Any small gap goes on a "Not itemised" line, so the sub-rows still
+add up to the group total. **Don't break groups down by the `_URL-` code in ad names**: an ad says
+where it points, not where the session landed.
+
+**`--reassign` every live test's redirect destination to the test's group.** The sheet files a session
+under the page it landed on after the redirect. A redirect test's challenger page then leaves the
+test's group and is counted as untested traffic in Other. That's wrong, because the same test is
+running on that traffic. On 2026-11-11, `[KDE-BTS] vs Single Page PLP FBB` sent 1,926 sessions to
+`/pages/family-bundle-builder-gridwall-builder`, and the sheet filed them under Other, not KDE-BTS.
+Take the destinations from `variations[].redirects[].destinationUrl` in the `analyze_experience`
+response. Only reassign them when the origin page belongs to a group. A destination the sheet
+already files correctly (e.g. `tdk-behind-the-science-lp-90-option` → TDK-BTS) is a no-op. The
+dashboard prints each move under the opportunities heading, because it changes group totals away
+from the sheet's own.
 
 ### 5d. Deep links
 
