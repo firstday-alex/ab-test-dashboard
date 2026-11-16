@@ -247,9 +247,20 @@ Sum `Sessions` per group and add a top-level `traffic` block:
   "source": "Meta ads by landing-page group, 2026-08-19 (1 day)",
   "denominator_label": "paid LP sessions",
   "total_sessions": 53517,
+  "window_days": 1,
   "groups": { "Broad PDP": 23397, "Other": 15076, "TDK-BTS": 10236, "KDE-BTS": 4390, "KCM-Melatonin": 418 }
 }
 ```
+
+**`window_days` is the period the sheet's sessions cover. It is 1 (yesterday).** The sheet doesn't
+say so. This was verified 2026-11-16 against Shopify: `FROM sessions SHOW sessions WHERE utm_content =
+'<ad name>' TIMESERIES day` for the sheet's two largest ads gave 1,246 and 1,186 sessions on the
+previous day, against the sheet's 1,409 and 1,330, a steady ratio of about 1.12. A 7-day window would
+have been 5x larger. Re-check this the same way if the totals ever jump. The opportunities table's
+**Est. time to result** column depends on it: (group sessions / `window_days`) per day, against the
+visitors a 50/50 test needs to detect a 10% relative CVR change (95%/80%). The baseline is the pooled
+control CVR of the live tests in the same JSON. Leave `window_days` out and the column renders em
+dashes. Never guess it.
 
 **Per test, traffic is the sum of that test's own groups. Across tests it is the UNION, never the
 sum.** Two tests on `Broad PDP` cover those 23,397 sessions once, not twice — summing produced 114.8%
