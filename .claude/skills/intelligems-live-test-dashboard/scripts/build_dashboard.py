@@ -698,70 +698,41 @@ BREAKDOWN_TOP = 12
 # ---------------------------------------------------------------------------
 # Estimated time to a result, per traffic opportunity.
 #
-# How long a 50/50 test on that group would need to detect EST_MDE relative
-# change in CVR at 95% confidence (two-sided) and 80% power. Two inputs, both
-# from the current pull:
-#   - baseline CVR: pooled control CVR of the live tests (sum of control orders
-#     / sum of control visitors), from Intelligems.
-#   - daily sessions: the group's sheet sessions / `traffic.window_days`.
-# Without `window_days` the column renders an em dash: sessions with no period
-# can't become a rate, and guessing the period would invent the answer.
+# Days until a 50/50 test on that group would reach ORDERS_PER_ARM orders in
+# each variation, at the group's own orders per day from the traffic sheet
+# (`traffic.group_orders` / `traffic.window_days`), and never under MIN_DAYS.
+# Both thresholds are Intelligems' own: its verdict stays not_ready until a
+# test has roughly 7+ days and 300+ orders per group.
 #
-# Sessions run higher than unique visitors, which is what Intelligems counts,
-# so the estimate errs short. It's a planning number, not the readiness badge.
+# No window, or no orders figure for a group, renders an em dash: guessing
+# either would invent the answer. Zero orders in the window renders as such.
 # ---------------------------------------------------------------------------
-EST_MDE = 0.10
-Z_ALPHA = 1.959964   # 95% two-sided
-Z_BETA = 0.841621    # 80% power
+ORDERS_PER_ARM = 300
+MIN_DAYS = 7
 
 
-def baseline_cvr(tests):
-    """Pooled control CVR across live tests -> (cvr, n tests used) or (None, 0)."""
-    orders = visitors = 0.0
-    used = 0
-    for t in tests:
-        c = control_of(t)
-        if not c or not c.get("visitors"):
-            continue
-        n = c.get("orders")
-        if n is None:
-            cvr = ((c.get("metrics") or {}).get("conversion_rate") or {}).get("value")
-            if cvr is None:
-                continue
-            n = cvr * float(c["visitors"])
-        orders += float(n)
-        visitors += float(c["visitors"])
-        used += 1
-    if not visitors or not orders:
-        return None, 0
-    return orders / visitors, used
-
-
-def visitors_needed(p, mde=EST_MDE):
-    """Total visitors, both arms, for a 50/50 two-proportion test."""
-    p2 = p * (1 + mde)
-    pbar = (p + p2) / 2
-    num = (Z_ALPHA * math.sqrt(2 * pbar * (1 - pbar))
-           + Z_BETA * math.sqrt(p * (1 - p) + p2 * (1 - p2))) ** 2
-    return 2 * num / (p2 - p) ** 2
-
-
-def fmt_eta(sessions, est):
-    """Days to a result for `sessions` in the sheet window, or an em dash."""
-    if not est or not sessions:
+def fmt_eta(orders, window):
+    """Days to ORDERS_PER_ARM orders per arm of a 50/50 test, or an em dash."""
+    if not window or orders is None:
         return "&mdash;"
-    days = est["need"] / (sessions / est["window"])
-    if days < 1:
-        return "&lt;1 day"
+    if orders <= 0:
+        return "no orders"
+    days = max(2 * ORDERS_PER_ARM / (orders / window), MIN_DAYS)
+    if days <= MIN_DAYS:
+        return f"{MIN_DAYS} days (min.)"
     if days <= 60:
-        d = math.ceil(days)
-        return f"~{d} day{'' if d == 1 else 's'}"
+        return f"~{math.ceil(days)} days"
     if days <= 365:
         return f"~{round(days / 30.4)} months"
     return "1 year+"
 
 
-def render_breakdown(gid, name, spec, ttotal, est=None):
+def row_orders(r):
+    v = r.get("orders")
+    return float(v) if v is not None else None
+
+
+def render_breakdown(gid, name, spec, ttotal, window=None):
     """
     Hidden sub-rows under one opportunity group, opened by the group's toggle.
 
@@ -774,9 +745,11 @@ def render_breakdown(gid, name, spec, ttotal, est=None):
     fixed = [r for r in rows_in if r.get("rest")]
     head, tail = items[:BREAKDOWN_TOP], items[BREAKDOWN_TOP:]
     if tail:
+        tail_orders = [row_orders(r) for r in tail]
         head = head + [{
             "label": f"{len(tail)} more",
             "sessions": sum(float(r["sessions"]) for r in tail),
+            "orders": None if None in tail_orders else sum(tail_orders),
             "rest": True,
         }]
     head += fixed
@@ -790,7 +763,7 @@ def render_breakdown(gid, name, spec, ttotal, est=None):
         f'<th scope="row">{esc(r["label"])}</th>'
         f'<td class="num">{float(r["sessions"]):,.0f}</td>'
         f'<td class="num">{share(float(r["sessions"]))}</td>'
-        f'<td class="num">{fmt_eta(float(r["sessions"]), est)}</td></tr>'
+        f'<td class="num">{fmt_eta(row_orders(r), window)}</td></tr>'
         for r in head
     )
     note = (f'<tr class="opp-sub opp-basis" data-of="{gid}" hidden><td colspan="4">'
@@ -818,33 +791,30 @@ def render_reassigned(moved):
             f'files it, because it&rsquo;s a live test&rsquo;s redirect page: {parts}.</p>')
 
 
-def render_eta_note(est, window, base):
+def render_eta_note(window, have_orders):
     """The line under the opportunities heading that says how the estimate is made."""
     if not window:
         return ('<p class="opps-sub">Est. time to result needs the period the sheet covers;'
                 ' set <code>traffic.window_days</code> to fill it in.</p>')
-    if not est:
-        return ('<p class="opps-sub">Est. time to result needs a baseline CVR, and no live'
-                ' test in this pull has control visitors and orders.</p>')
-    cvr, used = base
+    if not have_orders:
+        return ('<p class="opps-sub">Est. time to result needs orders per group;'
+                ' set <code>traffic.group_orders</code> to fill it in.</p>')
     w = f"{window:g} day" + ("" if window == 1 else "s")
-    return (f'<p class="opps-sub">Est. time to result: how long a 50/50 test on that group'
-            f' would take to detect a {EST_MDE * 100:.0f}% relative change in CVR (95% confidence,'
-            f' 80% power), using a {cvr * 100:.2f}% baseline (pooled control CVR of {used} live'
-            f' test{"" if used == 1 else "s"}) and the group&rsquo;s sessions per day (the sheet'
-            f' covers {w}). Sessions run higher than unique visitors, so read it as a best case.'
-            f'</p>')
+    return (f'<p class="opps-sub">Est. time to result: days until a 50/50 test on that group'
+            f' reaches {ORDERS_PER_ARM} orders per variation ({2 * ORDERS_PER_ARM} in all), at the'
+            f' group&rsquo;s orders per day in the sheet (which covers {w}), and never under'
+            f' {MIN_DAYS} days. That is when Intelligems starts giving a verdict, not a promise of'
+            f' a clear winner.</p>')
 
 
 def render_opportunities(idle, ttotal, label, source, breakdowns=None, reassigned=None,
-                         window=None, base=(None, 0)):
+                         window=None, group_orders=None):
     """Groups carrying traffic with no live test on them, largest first."""
     if not idle:
         return ""
     bidx = {norm_group(k): v for k, v in (breakdowns or {}).items()}
     window = float(window) if window else None
-    est = ({"need": visitors_needed(base[0]), "window": window}
-           if window and base[0] else None)
+    oidx = {norm_group(k): float(v) for k, v in (group_orders or {}).items()}
     out = []
     for i, (name, sessions) in enumerate(idle):
         spec = bidx.get(norm_group(name))
@@ -854,13 +824,13 @@ def render_opportunities(idle, ttotal, label, source, breakdowns=None, reassigne
             head = (f'<button class="opp-tog" type="button" aria-expanded="false"'
                     f' data-opp="{gid}">{esc(name)} <span class="opp-car" aria-hidden="true">'
                     f'&#9662;</span><span class="opp-hint">break down</span></button>')
-            sub = render_breakdown(gid, name, spec, ttotal, est)
+            sub = render_breakdown(gid, name, spec, ttotal, window)
         else:
             head, sub = esc(name), ""
         out.append(f'<tr><th scope="row">{head}</th>'
                    f'<td class="num">{sessions:,.0f}</td>'
                    f'<td class="num">{share}</td>'
-                   f'<td class="num">{fmt_eta(sessions, est)}</td></tr>{sub}')
+                   f'<td class="num">{fmt_eta(oidx.get(norm_group(name)), window)}</td></tr>{sub}')
     rows = "".join(out)
     total_idle = sum(s for _, s in idle)
     share = f"{total_idle / ttotal * 100:.1f}%" if ttotal else "&mdash;"
@@ -868,7 +838,7 @@ def render_opportunities(idle, ttotal, label, source, breakdowns=None, reassigne
 <section class="opps">
   <h2>Top traffic opportunities</h2>
   <p class="opps-sub">Landing-page groups with traffic and no live test on them &mdash;
-    {share} of {esc(label)} going untested. Source: {esc(source)}.</p>{render_eta_note(est, window, base)}{render_reassigned(reassigned)}
+    {share} of {esc(label)} going untested. Source: {esc(source)}.</p>{render_eta_note(window, bool(oidx))}{render_reassigned(reassigned)}
   <div class="t-scroll">
   <table>
     <thead><tr><th scope="col">Group</th><th scope="col">Sessions</th>
@@ -982,7 +952,7 @@ def build(data):
     opps = render_opportunities(idle, ttotal, tlabel, tsource,
                                 traffic_meta.get("breakdowns"),
                                 traffic_meta.get("reassigned"),
-                                traffic_meta.get("window_days"), baseline_cvr(tests))
+                                traffic_meta.get("window_days"), traffic_meta.get("group_orders"))
     lookup = render_lookup(tests, tidx, ttotal, tlabel, tsource, traffic_meta)
 
     generated = data.get("generated_at") or datetime.now().astimezone().isoformat(

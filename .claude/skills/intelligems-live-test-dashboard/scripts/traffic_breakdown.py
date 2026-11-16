@@ -44,6 +44,11 @@ def sessions(row):
     return float(raw) if raw else 0.0
 
 
+def orders(row):
+    raw = (row.get("Orders") or "").replace(",", "").strip()
+    return float(raw) if raw else 0.0
+
+
 def read(path):
     with open(path, newline="", encoding="utf-8") as fh:
         return list(csv.DictReader(fh))     # by header; column order has moved before
@@ -71,12 +76,14 @@ def lp_groups(group_rows, lp_rows):
 
 
 def build(group_rows, lp_rows, groups_to_break, reassign):
-    totals = Counter()
+    totals, g_orders = Counter(), Counter()
     for r in group_rows:
         totals[(r.get(GROUP_COL) or "").strip()] += sessions(r)
-    lp_sess = Counter()
+        g_orders[(r.get(GROUP_COL) or "").strip()] += orders(r)
+    lp_sess, lp_orders = Counter(), Counter()
     for r in lp_rows:
         lp_sess[(r.get(LP_COL) or "").strip()] += sessions(r)
+        lp_orders[(r.get(LP_COL) or "").strip()] += orders(r)
     mapping, conflicts = lp_groups(group_rows, lp_rows)
 
     moved = []
@@ -89,6 +96,8 @@ def build(group_rows, lp_rows, groups_to_break, reassign):
             continue                    # the sheet already counts it there
         totals[src] -= n
         totals[target] += n
+        g_orders[src] -= lp_orders.get(path, 0.0)
+        g_orders[target] += lp_orders.get(path, 0.0)
         mapping[path] = target
         moved.append({"path": path, "from": src, "to": target, "sessions": n})
 
@@ -96,17 +105,21 @@ def build(group_rows, lp_rows, groups_to_break, reassign):
     for g in groups_to_break:
         items = sorted(((lp, lp_sess[lp]) for lp, grp in mapping.items() if grp == g),
                        key=lambda t: -t[1])
-        rows = [{"label": lp, "sessions": s} for lp, s in items if s]
+        rows = [{"label": lp, "sessions": s, "orders": lp_orders[lp]} for lp, s in items if s]
         rest = totals[g] - sum(s for _, s in items)
         if rest >= 0.5:
             rows.append({"label": "Not itemised (the two sheet tabs disagree slightly)",
-                         "sessions": rest, "rest": True})
+                         "sessions": rest,
+                         "orders": max(g_orders[g] - sum(lp_orders[lp] for lp, _ in items), 0.0),
+                         "rest": True})
         breakdowns[g] = {"basis": BASIS, "rows": rows}
 
     if conflicts:
         print(f"warning: pages mapped to more than one group, not itemised: {conflicts}",
               file=sys.stderr)
-    return {"groups": {k: v for k, v in totals.items() if v}, "breakdowns": breakdowns,
+    return {"groups": {k: v for k, v in totals.items() if v},
+            "group_orders": {k: g_orders[k] for k, v in totals.items() if v},
+            "breakdowns": breakdowns,
             "reassigned": moved}
 
 

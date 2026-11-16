@@ -256,11 +256,14 @@ Sum `Sessions` per group and add a top-level `traffic` block:
 say so. This was verified 2026-11-16 against Shopify: `FROM sessions SHOW sessions WHERE utm_content =
 '<ad name>' TIMESERIES day` for the sheet's two largest ads gave 1,246 and 1,186 sessions on the
 previous day, against the sheet's 1,409 and 1,330, a steady ratio of about 1.12. A 7-day window would
-have been 5x larger. Re-check this the same way if the totals ever jump. The opportunities table's
-**Est. time to result** column depends on it: (group sessions / `window_days`) per day, against the
-visitors a 50/50 test needs to detect a 10% relative CVR change (95%/80%). The baseline is the pooled
-control CVR of the live tests in the same JSON. Leave `window_days` out and the column renders em
-dashes. Never guess it.
+have been 5x larger. Re-check this the same way if the totals ever jump.
+
+**`group_orders` is the sum of the sheet's `Orders` column per group** (same keys as `groups`;
+`traffic_breakdown.py` emits it). The opportunities table's **Est. time to result** column is the
+days until a 50/50 test on that group reaches 300 orders per variation, at (group orders /
+`window_days`) per day, floored at 7 days. Those are Intelligems' own not_ready thresholds
+(`ORDERS_PER_ARM`, `MIN_DAYS` in the script). Without `window_days` or `group_orders` the column
+renders em dashes. Never guess either. Breakdown rows carry their own `orders`.
 
 **Per test, traffic is the sum of that test's own groups. Across tests it is the UNION, never the
 sum.** Two tests on `Broad PDP` cover those 23,397 sessions once, not twice — summing produced 114.8%
