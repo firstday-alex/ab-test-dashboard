@@ -1,0 +1,72 @@
+name: Refresh live test dashboard
+
+# Pulls every live test from the Intelligems External API, rebuilds index.html,
+# runs the visual check, and commits only if the page changed. Needs the repo
+# secret INTELLIGEMS_API_KEY (Intelligems > Integrations > Intelligems External API).
+
+on:
+  schedule:
+    - cron: "0 13 * * *"   # daily, 13:00 UTC (7-8am Central)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-dashboard
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Playwright
+        run: |
+          pip install playwright==1.49.1
+          playwright install --with-deps chromium
+
+      - name: Pull from Intelligems
+        env:
+          INTELLIGEMS_API_KEY: ${{ secrets.INTELLIGEMS_API_KEY }}
+        run: |
+          python3 .claude/skills/intelligems-live-test-dashboard/scripts/pull_intelligems.py \
+            -o live_tests.json --cache-dir raw
+
+      - name: Build dashboard
+        run: |
+          python3 .claude/skills/intelligems-live-test-dashboard/scripts/build_dashboard.py \
+            live_tests.json -o index.html
+
+      - name: Visual check
+        run: |
+          python3 .claude/skills/intelligems-live-test-dashboard/scripts/visual_check.py \
+            index.html --shots shots
+
+      - name: Keep the pull for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: refresh-${{ github.run_id }}
+          path: |
+            live_tests.json
+            raw/
+            shots/
+          retention-days: 14
+
+      - name: Commit and push
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index.html unchanged"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Refresh live test dashboard $(date -u +%Y-%m-%d) (scheduled)"
+          git push origin HEAD:main

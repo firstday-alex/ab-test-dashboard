@@ -1,0 +1,12 @@
+{
+  "_readme": "Per-test overrides for unattended refreshes, keyed by Intelligems experience id. 'groups' replaces the traffic groups parsed from the test's [TAG] (use when a tag doesn't match its real targeting). 'note' is appended to the automatically generated note: use it for context the data checks can't know. Delete an entry when the test ends or the tag is fixed.",
+  "89f3d95e-5392-474c-ab84-cd2ffa2bc6da": {
+    "note": "Shares its origin page, /pages/tdk-behind-the-science-lp, with the other live TDK-BTS redirect test (both started 16 Nov). Confirm in Intelligems that they are mutually exclusive, or each test's control includes the other's challenger."
+  },
+  "f7102348-1d1c-4fd3-aea9-de752422fa73": {
+    "note": "Shares its origin page, /pages/tdk-behind-the-science-lp, with the other live TDK-BTS redirect test (both started 16 Nov). Confirm in Intelligems that they are mutually exclusive, or each test's control includes the other's challenger."
+  },
+  "018199c9-6158-4f1a-9496-456f6765138d": {
+    "note": "Only 2 variations are configured, though the test description also describes a Test 2 (gift ladder)."
+  }
+}

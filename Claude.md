@@ -30,6 +30,28 @@ the script and regenerate. Editing `index.html` directly means the next refresh 
 
 ## Regenerating
 
+### Without the MCP (preferred)
+
+`scripts/pull_intelligems.py` calls the Intelligems External API directly
+(`https://api.intelligems.io/v25-10-beta`, header `intelligems-access-token`, key from Intelligems >
+Integrations > Intelligems External API). It makes the same three reads per test as the MCP flow below,
+runs the data checks from "Check the data before publishing" and writes their findings into each
+`note`, pulls the traffic sheet, and emits the JSON `build_dashboard.py` reads:
+
+```bash
+INTELLIGEMS_API_KEY=... python3 .claude/skills/intelligems-live-test-dashboard/scripts/pull_intelligems.py -o live_tests.json --cache-dir raw
+python3 .claude/skills/intelligems-live-test-dashboard/scripts/build_dashboard.py live_tests.json -o index.html
+python3 .claude/skills/intelligems-live-test-dashboard/scripts/visual_check.py index.html --shots shots
+```
+
+`.github/workflows/refresh-dashboard.yml` runs exactly that daily at 13:00 UTC (and on manual dispatch)
+with the repo secret `INTELLIGEMS_API_KEY`, and commits `index.html` only after the visual check passes.
+Context the checks can't derive (a groups override, a known caveat) goes in `overrides.json` at the repo
+root, keyed by experience id — not hand-edited into the HTML. The API is in beta; if a response shape
+changes, run with `--cache-dir` and compare the raw JSON against the parsing in `build_test()`.
+
+### Through the MCP (chat session)
+
 The `intelligems-live-test-dashboard` skill owns this workflow. In short:
 
 1. `list_organizations` → First Day Life Inc. is `86ab4ded-43f9-4a0a-a9ef-80dfd2b5508d`. Pass it as
@@ -168,8 +190,8 @@ git commit -m "Refresh live test dashboard $(date -u +%Y-%m-%d)"
 git push origin main
 ```
 
-For automatic refreshes, a scheduled GitHub Action that runs the pull and build in-repo is the better
-shape — it needs an Intelligems API credential as a repo secret.
+Automatic refreshes run from `.github/workflows/refresh-dashboard.yml` (see "Without the MCP" above);
+it needs the repo secret `INTELLIGEMS_API_KEY`.
 
 ## Notes
 
