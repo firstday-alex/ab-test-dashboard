@@ -357,7 +357,11 @@ def traffic_block(tests, fetched):
                        if traffic_breakdown_norm(g) in sheet_groups), None)
         for rd in t["_redirects"]:
             p = path_of(rd["destinationUrl"])
-            if not target or not p or not path_of(rd.get("originUrl")):
+            origin = path_of(rd.get("originUrl"))
+            # Same-page redirects (only a ?view= added) and partial replacements
+            # land on the same path, so the sheet already files them correctly.
+            if (not target or not p or not origin or p == origin
+                    or rd.get("redirectType") == "partialReplacement"):
                 continue
             if not have_lp_col:
                 failed.setdefault(t["id"], []).append(p)
